@@ -13,6 +13,6 @@ public class RestTest {
   @GET
   @Produces(MediaType.TEXT_PLAIN)
   public String getHello() {
-    return "Hello, Rest!";
+    return "Hello, Rest!asldfkjas;dlfkj";
   }
 }
