@@ -1,0 +1,17 @@
+group 'com.aiceru.lezhinapply'
+version '0.1-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.6
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile 'org.glassfish.jersey.containers:jersey-container-servlet:2.23'
+}
