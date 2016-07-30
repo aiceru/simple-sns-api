@@ -1,6 +1,7 @@
 package com.aiceru.lezhinapply.util;
 
-import com.aiceru.lezhinapply.User;
+import com.aiceru.lezhinapply.model.Post;
+import com.aiceru.lezhinapply.model.User;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -15,7 +16,9 @@ public class HibernateUtil {
 
   static {
     try {
-      Configuration cfg = new Configuration().configure(configFile).addAnnotatedClass(User.class);
+      Configuration cfg = new Configuration().configure(configFile)
+              .addAnnotatedClass(User.class)
+              .addAnnotatedClass(Post.class);
       StandardServiceRegistryBuilder sb = new StandardServiceRegistryBuilder();
       sb.applySettings(cfg.getProperties());
       StandardServiceRegistry standardServiceRegistry = sb.build();
