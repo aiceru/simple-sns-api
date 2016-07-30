@@ -1,6 +1,8 @@
 package com.aiceru.lezhinapply.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created by iceru on 2016. 7. 29..
@@ -19,6 +21,12 @@ public class User {
 
   @Column(name = "email")
   private String email;
+
+  @ManyToMany
+  @JoinTable(name = "FOLLOWS",
+          joinColumns = {@JoinColumn(name = "following_id", referencedColumnName = "user_id", nullable = false)},
+          inverseJoinColumns = {@JoinColumn(name = "follower_id", referencedColumnName = "user_id", nullable = false)})
+  private Collection<User> following;
 
   public User() {
   }
@@ -50,6 +58,13 @@ public class User {
 
   public void setEmail(String email) {
     this.email = email;
+  }
+
+  public boolean addFollowing(User u) {
+    if(this.following == null) {
+      following = new ArrayList<User>();
+    }
+    return following.add(u);
   }
 
   @Override
