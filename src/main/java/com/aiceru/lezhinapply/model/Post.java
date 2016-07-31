@@ -12,7 +12,7 @@ public class Post {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "post_id")
-  private int postId;
+  private int id;
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "user_id")
@@ -34,12 +34,12 @@ public class Post {
     this.content = content;
   }
 
-  public int getPostId() {
-    return postId;
+  public int getId() {
+    return id;
   }
 
-  public void setPostId(int postId) {
-    this.postId = postId;
+  public void setId(int id) {
+    this.id = id;
   }
 
   public User getCreateUser() {
@@ -69,7 +69,7 @@ public class Post {
   @Override
   public String toString() {
     return "Post{" +
-            "postId=" + postId +
+            "id=" + id +
             ", createUser=" + createUser +
             ", timeStamp=" + timeStamp +
             ", content='" + content + '\'' +
@@ -83,12 +83,14 @@ public class Post {
 
     Post post = (Post) o;
 
-    return getPostId() == post.getPostId();
-
+    return ( id == post.getId() &&
+            createUser.equals(post.getCreateUser()) &&
+            timeStamp.compareTo(post.getTimeStamp()) == 0 &&
+            content.equals(post.getContent()) );
   }
 
   @Override
   public int hashCode() {
-    return getPostId();
+    return getId();
   }
 }

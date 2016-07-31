@@ -1,9 +1,7 @@
 package com.aiceru.lezhinapply.dao;
 
 import com.aiceru.lezhinapply.model.User;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import java.util.List;
 
@@ -16,57 +14,88 @@ import static org.junit.Assert.assertThat;
  */
 public class HibernateUserDaoTest {
   DaoInterface<User, Integer> dao = new HibernateUserDao();
-  User gasfard = new User("gasfard", "idiots@somemail.com");
-  User loyd = new User("loyd", "loyd@idiots.com");
+  User gasfard;
+  User loyd;
+
+  @Before
+  public void setup() {
+    gasfard = new User("gasfard", "idiots@somemail.com");
+    loyd = new User("loyd", "loyd@idiots.com");
+  }
+
+  @After
+  public void teardown() {
+    dao.deleteAll();
+  }
 
   @Test
-  public void testPersistAndFindById() {
+  public void testPersist() {
     int id1 = dao.persist(gasfard);
     int id2 = dao.persist(loyd);
 
     assertEquals(id1+1, id2);
-
-/*
-    List<User> noUsers = dao.findAll();
-    assertEquals(noUsers.size(), 0);
-
-    User foundUser = dao.findById(savedId);
-
-    assertEquals(gasfard.getName(), foundUser.getName());
-    assertEquals(gasfard.getEmail(), foundUser.getEmail());
-
-    User loyd = new User("loyd", "loyd@idiots.com");
-    dao.persist(loyd);
-
-    List<User> idiots = dao.findAll();
-    assertEquals(idiots.size(), 2);
-
-    assertEquals(idiots.get(0).getId(), 1);
-    assertEquals(idiots.get(0).getName(), gasfard.getName());
-    assertEquals(idiots.get(0).getEmail(), gasfard.getEmail());
-
-    assertEquals(idiots.get(1).getId(), 2);
-    assertEquals(idiots.get(1).getName(), loyd.getName());
-    assertEquals(idiots.get(1).getEmail(), loyd.getEmail());*/
   }
 
   @Test
   public void testFindById() {
-    User notfound = dao.findById(1);
-    assertNull(notfound);
+    User foundUser = dao.findById(1);
+    assertNull(foundUser);
 
-    int id1 = dao.persist(gasfard);
-    int id2 = dao.persist(loyd);
+    gasfard.setId(dao.persist(gasfard));
+    loyd.setId(dao.persist(loyd));
 
-    User foundUser = dao.findById(id1);
-    assertEquals(foundUser.getId(), id1);
-    assertEquals(foundUser.getName(), gasfard.getName());
-    assertEquals(foundUser.getEmail(), gasfard.getEmail());
+    foundUser = dao.findById(gasfard.getId());
+    assertEquals(gasfard, foundUser);
 
-    foundUser = dao.findById(id2);
-    assertEquals(foundUser.getId(), id2);
-    assertEquals(foundUser.getName(), loyd.getName());
-    assertEquals(foundUser.getEmail(), loyd.getEmail());
+    foundUser = dao.findById(loyd.getId());
+    assertEquals(loyd, foundUser);
   }
 
+  @Test
+  public void testFindAll() {
+    List<User> users = dao.findAll();
+    assertEquals(users.size(), 0);
+
+    gasfard.setId(dao.persist(gasfard));
+    loyd.setId(dao.persist(loyd));
+
+    users = dao.findAll();
+    assertEquals(users.size(), 2);
+    assertEquals(users.get(0), gasfard);
+    assertEquals(users.get(1), loyd);
+  }
+
+  @Test
+  public void testUpdate() {
+    int id = dao.persist(gasfard);
+    gasfard.setId(id);
+    assertEquals(gasfard, dao.findById(id));
+
+    gasfard.setName("gasfard_revisited");
+    dao.update(gasfard);
+    assertEquals(gasfard, dao.findById(id));
+  }
+
+  @Test
+  public void testDelete() {
+    gasfard.setId(dao.persist(gasfard));
+    assertEquals(gasfard, dao.findById(gasfard.getId()));
+
+    dao.delete(gasfard);
+    assertNull(dao.findById(gasfard.getId()));
+  }
+
+  @Test
+  public void testDeleteAll() {
+    gasfard.setId(dao.persist(gasfard));
+    loyd.setId(dao.persist(loyd));
+
+    assertEquals(gasfard, dao.findById(gasfard.getId()));
+    assertEquals(loyd, dao.findById(loyd.getId()));
+
+    dao.deleteAll();
+
+    assertNull(dao.findById(gasfard.getId()));
+    assertNull(dao.findById(loyd.getId()));
+  }
 }

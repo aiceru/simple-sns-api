@@ -8,6 +8,7 @@ import org.hibernate.SessionFactory;
 import org.junit.*;
 
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -29,15 +30,14 @@ public class FundamentalModelMappingTest {
     User testUser = new User("gasfard", "idiots@somemail.com");
     Session session = factory.openSession();
     session.beginTransaction();
-    session.save(testUser);
+    Integer id = (Integer) session.save(testUser);
+    testUser.setId(id);
     session.getTransaction().commit();
     session.close();
 
     session = factory.openSession();
-    User otherUser = session.get(User.class, 1);
-    assertEquals(otherUser.getName(), testUser.getName());
-    assertEquals(otherUser.getId(), 1);
-    assertEquals(otherUser.getEmail(), testUser.getEmail());
+    User otherUser = session.get(User.class, id);
+    assertEquals(otherUser, testUser);
     session.close();
     logger.trace(otherUser);
   }
@@ -46,18 +46,18 @@ public class FundamentalModelMappingTest {
   public void testPostMapping() {
     Session session = factory.openSession();
 
-    Post testPost = new Post(session.get(User.class, 1), new Date(), "this is test posting");
+    User testUser = (User) session.createQuery("from User u").list().get(0);
+    Post testPost = new Post(testUser, new Date(), "this is test posting");
 
     session.beginTransaction();
-    session.save(testPost);
+    Integer id = (Integer) session.save(testPost);
+    testPost.setId(id);
     session.getTransaction().commit();
     session.close();
 
     session = factory.openSession();
-    Post otherPost = session.get(Post.class, 1);
-    assertEquals(otherPost.getPostId(), 1);
-    assertEquals(otherPost.getCreateUser(), testPost.getCreateUser());
-    assertEquals(otherPost.getContent(), testPost.getContent());
+    Post otherPost = session.get(Post.class, id);
+    assertEquals(otherPost, testPost);
     session.close();
     logger.trace(otherPost);
   }

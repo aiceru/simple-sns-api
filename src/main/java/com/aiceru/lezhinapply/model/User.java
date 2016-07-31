@@ -3,6 +3,7 @@ package com.aiceru.lezhinapply.model;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Created by iceru on 2016. 7. 29..
@@ -132,8 +133,9 @@ public class User {
 
     User user = (User) o;
 
-    return getId() == user.getId();
-
+    return ( id == user.getId() &&
+            name.equals(user.getName()) &&
+            email.equals(user.getEmail()) );
   }
 
   @Override
