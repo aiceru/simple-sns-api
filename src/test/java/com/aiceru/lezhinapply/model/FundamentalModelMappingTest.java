@@ -36,7 +36,7 @@ public class FundamentalModelMappingTest {
     session = factory.openSession();
     User otherUser = session.get(User.class, 1);
     assertEquals(otherUser.getName(), testUser.getName());
-    assertEquals(otherUser.getUserId(), 1);
+    assertEquals(otherUser.getId(), 1);
     assertEquals(otherUser.getEmail(), testUser.getEmail());
     session.close();
     logger.trace(otherUser);
@@ -56,7 +56,7 @@ public class FundamentalModelMappingTest {
     session = factory.openSession();
     Post otherPost = session.get(Post.class, 1);
     assertEquals(otherPost.getPostId(), 1);
-    assertEquals(otherPost.getUserId(), testPost.getUserId());
+    assertEquals(otherPost.getCreateUser(), testPost.getCreateUser());
     assertEquals(otherPost.getContent(), testPost.getContent());
     session.close();
     logger.trace(otherPost);

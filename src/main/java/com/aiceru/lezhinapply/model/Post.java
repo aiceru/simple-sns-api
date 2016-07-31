@@ -14,8 +14,9 @@ public class Post {
   @Column(name = "post_id")
   private int postId;
 
-  @Column(name = "user_id")
-  private int userId;
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "user_id")
+  private User createUser;
 
   @Column(name = "time")
   @Temporal(TemporalType.TIMESTAMP)
@@ -28,7 +29,7 @@ public class Post {
   }
 
   public Post(User createUser, Date timeStamp, String content) {
-    this.userId = createUser.getUserId();
+    this.createUser = createUser;
     this.timeStamp = timeStamp;
     this.content = content;
   }
@@ -41,12 +42,12 @@ public class Post {
     this.postId = postId;
   }
 
-  public int getUserId() {
-    return userId;
+  public User getCreateUser() {
+    return createUser;
   }
 
-  public void setUserId(int userId) {
-    this.userId = userId;
+  public void setCreateUser(User createUser) {
+    this.createUser = createUser;
   }
 
   public Date getTimeStamp() {
@@ -69,7 +70,7 @@ public class Post {
   public String toString() {
     return "Post{" +
             "postId=" + postId +
-            ", userId=" + userId +
+            ", createUser=" + createUser +
             ", timeStamp=" + timeStamp +
             ", content='" + content + '\'' +
             '}';

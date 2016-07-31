@@ -14,7 +14,7 @@ public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "user_id")
-  private int userId;
+  private int id;
 
   @Column(name = "name")
   private String name;
@@ -23,10 +23,21 @@ public class User {
   private String email;
 
   @ManyToMany
-  @JoinTable(name = "FOLLOWS",
-          joinColumns = {@JoinColumn(name = "following_id", referencedColumnName = "user_id", nullable = false)},
-          inverseJoinColumns = {@JoinColumn(name = "follower_id", referencedColumnName = "user_id", nullable = false)})
-  private Collection<User> following;
+  @JoinTable(name = "FOLLOWINGS",
+          joinColumns = {@JoinColumn(name = "follower_id", referencedColumnName = "user_id", nullable = false)},
+          inverseJoinColumns = {@JoinColumn(name = "following_id", referencedColumnName = "user_id", nullable = false)})
+  private Collection<User> followings;
+
+
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @JoinColumn(name = "user_id")
+  private Collection<Post> posts;
+
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @JoinTable(name = "FOLLOWINGPOSTS",
+          joinColumns = @JoinColumn(name = "user_id"),
+          inverseJoinColumns = @JoinColumn(name = "post_id"))
+  private Collection<Post> followingPosts;
 
   public User() {
   }
@@ -36,12 +47,12 @@ public class User {
     this.email = email;
   }
 
-  public int getUserId() {
-    return userId;
+  public int getId() {
+    return id;
   }
 
-  public void setUserId(int userId) {
-    this.userId = userId;
+  public void setId(int id) {
+    this.id = id;
   }
 
   public String getName() {
@@ -60,17 +71,55 @@ public class User {
     this.email = email;
   }
 
+  public Collection<User> getFollowings() {
+    return followings;
+  }
+
+  public void setFollowings(Collection<User> followings) {
+    this.followings = followings;
+  }
+
+  public Collection<Post> getPosts() {
+    return posts;
+  }
+
+  public void setPosts(Collection<Post> posts) {
+    this.posts = posts;
+  }
+
+  public Collection<Post> getFollowingPosts() {
+    return followingPosts;
+  }
+
+  public void setFollowingPosts(Collection<Post> followingPosts) {
+    this.followingPosts = followingPosts;
+  }
+
   public boolean addFollowing(User u) {
-    if(this.following == null) {
-      following = new ArrayList<User>();
+    if (followings == null) {
+      followings = new ArrayList<User>();
     }
-    return following.add(u);
+    return followings.add(u);
+  }
+
+  public boolean addPost(Post p) {
+    if (posts == null) {
+      posts = new ArrayList<Post>();
+    }
+    return posts.add(p);
+  }
+
+  public boolean addFollowingPost(Post p) {
+    if (followingPosts == null) {
+      followingPosts = new ArrayList<Post>();
+    }
+    return followingPosts.add(p);
   }
 
   @Override
   public String toString() {
     return "User{" +
-            "userId=" + userId +
+            "id=" + id +
             ", name='" + name + '\'' +
             ", email='" + email + '\'' +
             '}';
@@ -83,12 +132,12 @@ public class User {
 
     User user = (User) o;
 
-    return getUserId() == user.getUserId();
+    return getId() == user.getId();
 
   }
 
   @Override
   public int hashCode() {
-    return getUserId();
+    return getId();
   }
 }
