@@ -85,7 +85,7 @@ public class Post {
 
     return ( id == post.getId() &&
             createUser.equals(post.getCreateUser()) &&
-            timeStamp.compareTo(post.getTimeStamp()) == 0 &&
+            (timeStamp.compareTo(post.getTimeStamp()) == 0 || post.getTimeStamp().compareTo(timeStamp) == 0) &&
             content.equals(post.getContent()) );
   }
 

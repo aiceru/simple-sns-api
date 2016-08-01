@@ -1,9 +1,7 @@
 package com.aiceru.lezhinapply.model;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Created by iceru on 2016. 7. 29..
@@ -23,17 +21,22 @@ public class User {
   @Column(name = "email")
   private String email;
 
-  @ManyToMany
+  @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "FOLLOWINGS",
-          joinColumns = {@JoinColumn(name = "follower_id", referencedColumnName = "user_id", nullable = false)},
-          inverseJoinColumns = {@JoinColumn(name = "following_id", referencedColumnName = "user_id", nullable = false)})
-  private Collection<User> followings;
+          joinColumns = {@JoinColumn(name = "follower_id", nullable = false)},
+          inverseJoinColumns = {@JoinColumn(name = "following_id", nullable = false)})
+  private Set<User> followings;
 
+  @ManyToMany(fetch = FetchType.EAGER, mappedBy = "followings")
+  /*@JoinTable(name = "FOLLOWINGS",
+          joinColumns = {@JoinColumn(name = "following_id", nullable = false)},
+          inverseJoinColumns = {@JoinColumn(name = "follower_id", nullable = false)})*/
+  private Set<User> followers;
 
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-  @JoinColumn(name = "user_id")
-  private Collection<Post> posts;
+  @OneToMany(targetEntity = Post.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "createUser")
+  private List<Post> posts;
 
+  // TODO : Confirm this!!
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   @JoinTable(name = "FOLLOWINGPOSTS",
           joinColumns = @JoinColumn(name = "user_id"),
@@ -72,19 +75,27 @@ public class User {
     this.email = email;
   }
 
-  public Collection<User> getFollowings() {
+  public Set<User> getFollowings() {
     return followings;
   }
 
-  public void setFollowings(Collection<User> followings) {
+  public void setFollowings(HashSet<User> followings) {
     this.followings = followings;
   }
 
-  public Collection<Post> getPosts() {
+  public Set<User> getFollowers() {
+    return followers;
+  }
+
+  public void setFollowers(HashSet<User> followers) {
+    this.followers = followers;
+  }
+
+  public List<Post> getPosts() {
     return posts;
   }
 
-  public void setPosts(Collection<Post> posts) {
+  public void setPosts(List<Post> posts) {
     this.posts = posts;
   }
 
@@ -98,9 +109,16 @@ public class User {
 
   public boolean addFollowing(User u) {
     if (followings == null) {
-      followings = new ArrayList<User>();
+      followings = new HashSet<User>();
     }
     return followings.add(u);
+  }
+
+  public boolean addFollower(User u) {
+    if(followers == null) {
+      followers = new HashSet<User>();
+    }
+    return followers.add(u);
   }
 
   public boolean addPost(Post p) {
