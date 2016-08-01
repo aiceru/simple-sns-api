@@ -61,9 +61,4 @@ public class FundamentalModelMappingTest {
     session.close();
     logger.trace(otherPost);
   }
-
-  @AfterClass
-  public static void tearDown() {
-    factory.close();
-  }
 }
