@@ -1,5 +1,7 @@
 package com.aiceru.lezhinapply.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.*;
 
@@ -34,6 +36,7 @@ public class User {
   private List<User> followers;
 
   @OneToMany(targetEntity = Post.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "createUser")
+  @JsonManagedReference
   private List<Post> posts;
 
   // TODO : Confirm this!!

@@ -2,6 +2,7 @@ package com.aiceru.lezhinapply.dao;
 
 import com.aiceru.lezhinapply.model.Post;
 import com.aiceru.lezhinapply.model.User;
+import com.aiceru.lezhinapply.util.SqlExecuter;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -14,7 +15,6 @@ import static org.junit.Assert.assertNull;
  * Created by iceru on 2016. 8. 1..
  */
 public class BasicDaoTest extends HibernateDaoTest {
-
   @Test
   public void testPersist() {
     userDao.getCurrentSessionWithTransaction();

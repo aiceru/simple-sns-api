@@ -15,7 +15,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>first rest example</servlet-name>
-        <url-pattern>/apis/*</url-pattern>
+        <url-pattern>/*</url-pattern>
     </servlet-mapping>
 </web-app>
 

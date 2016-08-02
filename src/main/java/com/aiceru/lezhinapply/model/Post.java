@@ -1,5 +1,7 @@
 package com.aiceru.lezhinapply.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -16,6 +18,7 @@ public class Post {
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "user_id")
+  @JsonBackReference
   private User createUser;
 
   @Column(name = "time")
