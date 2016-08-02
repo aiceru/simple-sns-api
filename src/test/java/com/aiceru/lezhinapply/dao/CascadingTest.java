@@ -8,13 +8,9 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * Created by iceru on 2016. 8. 1..
@@ -38,32 +34,35 @@ public class CascadingTest extends HibernateDaoTest {
 
   @Test
   public void testPersistAndDeleteUserWithPost() {
+    userDao.getCurrentSessionWithTransaction();
     userDao.persist(santiago);
+    userDao.closeCurrentSessionWithTransaction();
 
+    postDao.getCurrentSessionWithTransaction();
     List<Post> postList = postDao.findAll();
-    for( Post p : postList ) {
-      if( santiagoPost.equals(p) ) {
-        return;
-      }
-    }
-    fail("santiago's post not exists in DB!");
+    assertTrue(postList.contains(santiagoPost));
+    postDao.closeCurrentSessionWithTransaction();
 
+    userDao.getCurrentSessionWithTransaction();
     userDao.delete(santiago);
+    userDao.closeCurrentSessionWithTransaction();
+
+    postDao.getCurrentSessionWithTransaction();
     postList = postDao.findAll();
-    for( Post p : postList ) {
-      if( santiagoPost.equals(p) ) {
-        fail("santiago's post exists in DB after delete!");
-      }
-    }
+    assertFalse(postList.contains(santiagoPost));
+    postDao.closeCurrentSessionWithTransaction();
   }
 
   @Test
   public void testFollowingUsers() {
+    userDao.getCurrentSessionWithTransaction();
+
     gasfard.addPost(helpme);
     gasfard.addPost(please);
     loyd.addPost(killyou);
     loyd.addPost(nono);
-    persistGasfardAndLoyd();  // all posts saved by cascading
+    gasfard.setId(userDao.persist(gasfard));
+    loyd.setId(userDao.persist(loyd));
     santiago.setId(userDao.persist(santiago));
 
     User gasfardFromDao = userDao.findById(gasfard.getId());
@@ -84,29 +83,39 @@ public class CascadingTest extends HibernateDaoTest {
 
     User testUser = userDao.findById(santiago.getId());
     assertEquals(santiago, testUser);
-    assertTrue(testUser.getFollowers().contains(gasfard));
-    assertTrue(testUser.getFollowings().contains(loyd));
-    Iterator<User> it = testUser.getFollowers().iterator();
-    while(it.hasNext()) {
-      User user = it.next();
-      if(gasfard.equals(user)) {
+    assertEquals(2, testUser.getFollowings().size());
+    assertEquals(1, testUser.getFollowers().size());
+    assertTrue(testUser.getFollowers().contains(gasfardFromDao));
+    assertTrue(testUser.getFollowings().contains(loydFromDao));
+    assertTrue(testUser.getFollowings().contains(gasfardFromDao));
+
+    for(User user : testUser.getFollowers()) {
+      if(gasfardFromDao.equals(user)) {
         assertTrue(user.getPosts().contains(helpme));
         assertTrue(user.getPosts().contains(please));
-        assertTrue(user.getFollowings().contains(santiago));
-        assertTrue(user.getFollowers().contains(santiago));
+        assertEquals(1, user.getFollowers().size());
+        assertEquals(1, user.getFollowings().size());
+        assertTrue(user.getFollowings().contains(santiagoFromDao));
+        assertTrue(user.getFollowers().contains(santiagoFromDao));
       }
       else if(loyd.equals(user)) {
         assertTrue(user.getPosts().contains(killyou));
         assertTrue(user.getPosts().contains(nono));
-        assertTrue(user.getFollowers().contains(santiago));
+        assertEquals(1, user.getFollowers().size());
+        assertTrue(user.getFollowers().contains(santiagoFromDao));
         assertTrue(user.getFollowings().isEmpty());
       }
     }
+
+    userDao.closeCurrentSessionWithTransaction();
   }
 
   @Test
   public void testPushPost() {
-    persistGasfardAndLoyd();
+    userDao.getCurrentSessionWithTransaction();
+
+    gasfard.setId(userDao.persist(gasfard));
+    loyd.setId(userDao.persist(loyd));
     santiago.setId(userDao.persist(santiago));
 
     User gasfardFromDao = userDao.findById(gasfard.getId());
@@ -114,23 +123,24 @@ public class CascadingTest extends HibernateDaoTest {
     User santiagoFromDao = userDao.findById(santiago.getId());
 
     gasfardFromDao.addFollowing(santiagoFromDao);
-    gasfardFromDao.addFollower(santiagoFromDao);
     santiagoFromDao.addFollower(gasfardFromDao);
     santiagoFromDao.addFollowing(gasfardFromDao);
+    gasfardFromDao.addFollower(santiagoFromDao);
     santiagoFromDao.addFollowing(loydFromDao);
     loydFromDao.addFollower(santiagoFromDao);
 
-    Set<User> followSet = santiagoFromDao.getFollowers();
-    Iterator<User> it = followSet.iterator();
+    List<User> followers = santiagoFromDao.getFollowers();
 
-    while(it.hasNext()) {
-      it.next().addFollowingPost(santiagoFromDao.getPosts().get(0));
+    for(User f : followers) {
+      f.addFollowingPost(santiagoFromDao.getPosts().get(0));
     }
+    userDao.closeCurrentSessionWithTransaction();
+    userDao.getCurrentSessionWithTransaction();
 
-    userDao.update(gasfardFromDao);
-    userDao.update(santiagoFromDao);
-    userDao.update(loydFromDao);
+    User testUser = userDao.findById(gasfardFromDao.getId());
+    assertEquals(1, testUser.getFollowingPosts().size());
+    assertTrue(testUser.getFollowingPosts().contains(santiagoFromDao.getPosts().get(0)));
 
-    List<User> users = userDao.findAll();
+    userDao.closeCurrentSessionWithTransaction();
   }
 }

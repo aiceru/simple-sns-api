@@ -14,69 +14,58 @@ public class HibernatePostDao implements DaoInterface<Post, Integer> {
   private Session session;
   private Transaction transaction;
 
-  private void openSession() {
-    session = HibernateUtil.getSessionFactory().openSession();
+  @Override
+  public void getCurrentSession() {
+    session = HibernateUtil.getSessionFactory().getCurrentSession();
   }
 
-  private void openSessionWithTransaction() {
-    openSession();
+  @Override
+  public void getCurrentSessionWithTransaction() {
+    getCurrentSession();
     transaction = session.beginTransaction();
   }
 
-  private void closeSession() {
+  @Override
+  public void closeCurrentSession() {
     session.close();
   }
 
-  private void closeSessionWithTransaction() {
+  @Override
+  public void closeCurrentSessionWithTransaction() {
     transaction.commit();
-    closeSession();
+    closeCurrentSession();
   }
 
   @Override
   public Integer persist(Post entity) {
-    openSessionWithTransaction();
-    Integer id = (Integer) session.save(entity);
-    closeSessionWithTransaction();
-    return id;
+    return (Integer) session.save(entity);
   }
 
   @Override
   public void update(Post entity) {
-    openSessionWithTransaction();
     session.update(entity);
-    closeSessionWithTransaction();
   }
 
   @Override
   public Post findById(Integer id) {
-    openSession();
-    Post post = session.get(Post.class, id);
-    closeSession();
-    return post;
+    return session.get(Post.class, id);
   }
 
   @Override
   public void delete(Post entity) {
-    openSessionWithTransaction();
     session.delete(entity);
-    closeSessionWithTransaction();
   }
 
   @Override
   public List<Post> findAll() {
-    openSession();
-    List<Post> posts = session.createQuery("from Post p").list();
-    closeSession();
-    return posts;
+    return session.createQuery("from Post p").list();
   }
 
   @Override
   public void deleteAll() {
-    openSessionWithTransaction();
     List<Post> posts = session.createQuery("from Post p").list();
     for(Post post : posts) {
       session.delete(post);
     }
-    closeSessionWithTransaction();
   }
 }

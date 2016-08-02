@@ -25,13 +25,13 @@ public class User {
   @JoinTable(name = "FOLLOWINGS",
           joinColumns = {@JoinColumn(name = "follower_id", nullable = false)},
           inverseJoinColumns = {@JoinColumn(name = "following_id", nullable = false)})
-  private Set<User> followings;
+  private List<User> followings;
 
   @ManyToMany(fetch = FetchType.EAGER, mappedBy = "followings")
   /*@JoinTable(name = "FOLLOWINGS",
           joinColumns = {@JoinColumn(name = "following_id", nullable = false)},
           inverseJoinColumns = {@JoinColumn(name = "follower_id", nullable = false)})*/
-  private Set<User> followers;
+  private List<User> followers;
 
   @OneToMany(targetEntity = Post.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "createUser")
   private List<Post> posts;
@@ -75,19 +75,19 @@ public class User {
     this.email = email;
   }
 
-  public Set<User> getFollowings() {
+  public List<User> getFollowings() {
     return followings;
   }
 
-  public void setFollowings(HashSet<User> followings) {
+  public void setFollowings(List<User> followings) {
     this.followings = followings;
   }
 
-  public Set<User> getFollowers() {
+  public List<User> getFollowers() {
     return followers;
   }
 
-  public void setFollowers(HashSet<User> followers) {
+  public void setFollowers(List<User> followers) {
     this.followers = followers;
   }
 
@@ -109,14 +109,14 @@ public class User {
 
   public boolean addFollowing(User u) {
     if (followings == null) {
-      followings = new HashSet<User>();
+      followings = new ArrayList<User>();
     }
     return followings.add(u);
   }
 
   public boolean addFollower(User u) {
     if(followers == null) {
-      followers = new HashSet<User>();
+      followers = new ArrayList<User>();
     }
     return followers.add(u);
   }

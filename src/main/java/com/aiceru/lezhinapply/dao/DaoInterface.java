@@ -7,6 +7,11 @@ import java.util.List;
  * Created by iceru on 2016. 7. 31..
  */
 public interface DaoInterface<T, Id extends Serializable> {
+  public void getCurrentSession();
+  public void getCurrentSessionWithTransaction();
+  public void closeCurrentSession();
+  public void closeCurrentSessionWithTransaction();
+
   public Id persist(T entity);
   public void update(T entity);
   public T findById(Id id);

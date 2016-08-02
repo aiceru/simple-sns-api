@@ -41,22 +41,14 @@ class HibernateDaoTest {
 
   @After
   public void teardown() {
+    userDao.getCurrentSessionWithTransaction();
+    postDao.getCurrentSession();
     /* all post records will be delete by cascading */
     userDao.deleteAll();
 
     assertEquals(0, postDao.findAll().size());
     assertEquals(0, userDao.findAll().size());
-  }
-
-  void persistGasfardAndLoyd() {
-    gasfard.setId(userDao.persist(gasfard));
-    loyd.setId(userDao.persist(loyd));
-  }
-
-  void persistGasfardAndLoydPosts() {
-    helpme.setId(postDao.persist(helpme));
-    killyou.setId(postDao.persist(killyou));
-    please.setId(postDao.persist(please));
-    nono.setId(postDao.persist(nono));
+    userDao.closeCurrentSessionWithTransaction();
+    postDao.closeCurrentSession();
   }
 }

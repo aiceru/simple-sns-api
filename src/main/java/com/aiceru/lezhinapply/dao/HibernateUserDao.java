@@ -15,69 +15,58 @@ public class HibernateUserDao implements DaoInterface<User, Integer> {
   private Session session;
   private Transaction transaction;
 
-  private void openSession() {
-    session = HibernateUtil.getSessionFactory().openSession();
+  @Override
+  public void getCurrentSession() {
+    session = HibernateUtil.getSessionFactory().getCurrentSession();
   }
 
-  private void openSessionWithTransaction() {
-    openSession();
+  @Override
+  public void getCurrentSessionWithTransaction() {
+    getCurrentSession();
     transaction = session.beginTransaction();
   }
 
-  private void closeSession() {
+  @Override
+  public void closeCurrentSession() {
     session.close();
   }
 
-  private void closeSessionWithTransaction() {
+  @Override
+  public void closeCurrentSessionWithTransaction() {
     transaction.commit();
-    closeSession();
+    closeCurrentSession();
   }
 
   @Override
   public Integer persist(User entity) {
-    openSessionWithTransaction();
-    Integer id = (Integer) session.save(entity);
-    closeSessionWithTransaction();
-    return id;
+    return (Integer) session.save(entity);
   }
 
   @Override
   public void update(User entity) {
-    openSessionWithTransaction();
     session.update(entity);
-    closeSessionWithTransaction();
   }
 
   @Override
   public User findById(Integer id) {
-    openSession();
-    User user = session.get(User.class, id);
-    closeSession();
-    return user;
+    return session.get(User.class, id);
   }
 
   @Override
   public void delete(User entity) {
-    openSessionWithTransaction();
     session.delete(entity);
-    closeSessionWithTransaction();
   }
 
   @Override
   public List<User> findAll() {
-    openSession();
-    List<User> users = session.createQuery("from User u").list();
-    closeSession();
-    return users;
+    return session.createQuery("from User").list();
   }
 
   @Override
   public void deleteAll() {
-    openSessionWithTransaction();
-    List<User> users = session.createQuery("from User u").list();
+    List<User> users = session.createQuery("from User").list();
     for(User user : users) {
       session.delete(user);
     }
-    closeSessionWithTransaction();
   }
 }
