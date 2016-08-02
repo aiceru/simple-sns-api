@@ -1,15 +1,19 @@
 package com.aiceru.lezhinapply.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by iceru on 2016. 7. 29..
  */
 @Entity
 @Table(name = "USERS")
+@JsonIdentityInfo(generator = JSOGGenerator.class)
 public class User {
 
   @Id
@@ -36,20 +40,24 @@ public class User {
   private List<User> followers;
 
   @OneToMany(targetEntity = Post.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "createUser")
-  @JsonManagedReference
   private List<Post> posts;
 
   // TODO : Confirm this!!
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   @JoinTable(name = "FOLLOWINGPOSTS",
           joinColumns = @JoinColumn(name = "user_id"),
           inverseJoinColumns = @JoinColumn(name = "post_id"))
-  private Collection<Post> followingPosts;
+  private List<Post> followingPosts;
 
   public User() {
+    posts = new ArrayList<Post>();
+    followers = new ArrayList<User>();
+    followings = new ArrayList<User>();
+    followingPosts = new ArrayList<Post>();
   }
 
   public User(String name, String email) {
+    this();
     this.name = name;
     this.email = email;
   }
@@ -106,35 +114,23 @@ public class User {
     return followingPosts;
   }
 
-  public void setFollowingPosts(Collection<Post> followingPosts) {
+  public void setFollowingPosts(List<Post> followingPosts) {
     this.followingPosts = followingPosts;
   }
 
   public boolean addFollowing(User u) {
-    if (followings == null) {
-      followings = new ArrayList<User>();
-    }
     return followings.add(u);
   }
 
   public boolean addFollower(User u) {
-    if(followers == null) {
-      followers = new ArrayList<User>();
-    }
     return followers.add(u);
   }
 
   public boolean addPost(Post p) {
-    if (posts == null) {
-      posts = new ArrayList<Post>();
-    }
     return posts.add(p);
   }
 
   public boolean addFollowingPost(Post p) {
-    if (followingPosts == null) {
-      followingPosts = new ArrayList<Post>();
-    }
     return followingPosts.add(p);
   }
 

@@ -74,7 +74,7 @@ public class BasicDaoTest extends HibernateDaoTest {
     userDao.getCurrentSessionWithTransaction();
 
     List<User> users = userDao.findAll();
-    assertEquals(users.size(), 0);
+    assertEquals(0, users.size());
 
     gasfard.setId(userDao.persist(gasfard));
     loyd.setId(userDao.persist(loyd));
