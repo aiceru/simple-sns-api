@@ -19,15 +19,12 @@ public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "user_id")
-  @TimeLineView
   private int id;
 
   @Column(name = "name")
-  @TimeLineView
   private String name;
 
   @Column(name = "email")
-  @TimeLineView
   private String email;
 
   @ManyToMany(fetch = FetchType.EAGER)

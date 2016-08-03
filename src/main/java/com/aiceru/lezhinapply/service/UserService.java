@@ -4,6 +4,7 @@ import com.aiceru.lezhinapply.dao.DaoInterface;
 import com.aiceru.lezhinapply.dao.HibernateUserDao;
 import com.aiceru.lezhinapply.model.User;
 import com.aiceru.lezhinapply.util.filter.TimeLineView;
+import com.aiceru.lezhinapply.util.filter.UserDetailView;
 import com.aiceru.lezhinapply.util.jpa.SqlExecuter;
 
 import javax.ws.rs.GET;
