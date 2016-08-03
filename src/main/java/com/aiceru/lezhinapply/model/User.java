@@ -1,7 +1,8 @@
 package com.aiceru.lezhinapply.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.voodoodyne.jackson.jsog.JSOGGenerator;
+import com.aiceru.lezhinapply.util.filter.TimeLineView;
+import com.aiceru.lezhinapply.util.filter.UserDetailView;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -13,33 +14,35 @@ import java.util.List;
  */
 @Entity
 @Table(name = "USERS")
-@JsonIdentityInfo(generator = JSOGGenerator.class)
 public class User {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "user_id")
+  @TimeLineView
   private int id;
 
   @Column(name = "name")
+  @TimeLineView
   private String name;
 
   @Column(name = "email")
+  @TimeLineView
   private String email;
 
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "FOLLOWINGS",
           joinColumns = {@JoinColumn(name = "follower_id", nullable = false)},
           inverseJoinColumns = {@JoinColumn(name = "following_id", nullable = false)})
+  @JsonIgnore
   private List<User> followings;
 
   @ManyToMany(fetch = FetchType.EAGER, mappedBy = "followings")
-  /*@JoinTable(name = "FOLLOWINGS",
-          joinColumns = {@JoinColumn(name = "following_id", nullable = false)},
-          inverseJoinColumns = {@JoinColumn(name = "follower_id", nullable = false)})*/
+  @JsonIgnore
   private List<User> followers;
 
   @OneToMany(targetEntity = Post.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "createUser")
+  @UserDetailView
   private List<Post> posts;
 
   // TODO : Confirm this!!
@@ -47,6 +50,7 @@ public class User {
   @JoinTable(name = "FOLLOWINGPOSTS",
           joinColumns = @JoinColumn(name = "user_id"),
           inverseJoinColumns = @JoinColumn(name = "post_id"))
+  @JsonIgnore
   private List<Post> followingPosts;
 
   public User() {

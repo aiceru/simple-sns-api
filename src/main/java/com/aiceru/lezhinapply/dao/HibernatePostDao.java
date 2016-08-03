@@ -1,7 +1,7 @@
 package com.aiceru.lezhinapply.dao;
 
 import com.aiceru.lezhinapply.model.Post;
-import com.aiceru.lezhinapply.util.HibernateUtil;
+import com.aiceru.lezhinapply.util.jpa.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 

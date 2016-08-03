@@ -2,10 +2,8 @@ package com.aiceru.lezhinapply.dao;
 
 import com.aiceru.lezhinapply.model.Post;
 import com.aiceru.lezhinapply.model.User;
-import com.aiceru.lezhinapply.util.SqlExecuter;
 import org.junit.Test;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;

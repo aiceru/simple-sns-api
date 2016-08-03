@@ -1,6 +1,6 @@
 package com.aiceru.lezhinapply.model;
 
-import com.aiceru.lezhinapply.util.HibernateUtil;
+import com.aiceru.lezhinapply.util.jpa.HibernateUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;

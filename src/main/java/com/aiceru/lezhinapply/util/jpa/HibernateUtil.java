@@ -1,4 +1,4 @@
-package com.aiceru.lezhinapply.util;
+package com.aiceru.lezhinapply.util.jpa;
 
 import com.aiceru.lezhinapply.model.Post;
 import com.aiceru.lezhinapply.model.User;

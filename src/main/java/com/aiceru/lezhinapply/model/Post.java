@@ -1,7 +1,6 @@
 package com.aiceru.lezhinapply.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.voodoodyne.jackson.jsog.JSOGGenerator;
+import com.aiceru.lezhinapply.util.filter.TimeLineView;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -11,7 +10,6 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "POSTS")
-@JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Post {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +18,7 @@ public class Post {
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "user_id")
+  @TimeLineView
   private User createUser;
 
   @Column(name = "time")

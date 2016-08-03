@@ -2,13 +2,10 @@ package com.aiceru.lezhinapply.dao;
 
 import com.aiceru.lezhinapply.model.Post;
 import com.aiceru.lezhinapply.model.User;
-import org.h2.tools.Server;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Date;
 

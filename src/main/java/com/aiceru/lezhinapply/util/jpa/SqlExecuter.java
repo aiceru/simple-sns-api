@@ -1,4 +1,4 @@
-package com.aiceru.lezhinapply.util;
+package com.aiceru.lezhinapply.util.jpa;
 
 import com.aiceru.lezhinapply.model.Post;
 import com.aiceru.lezhinapply.model.User;
@@ -15,12 +15,12 @@ public class SqlExecuter {
   private static Session session;
   private static Transaction tx;
 
-  public static void execute(String filename) throws IOException {
+  public static void execute(InputStream inputStream) throws IOException {
     session = HibernateUtil.getSessionFactory().getCurrentSession();
     tx = session.beginTransaction();
 
-    FileReader fileReader = new FileReader(filename);
-    BufferedReader bufferedReader = new BufferedReader(fileReader);
+    //FileReader fileReader = new FileReader(filename);
+    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));//fileReader);
 
     String sql = bufferedReader.readLine();
     while(sql != null) {
