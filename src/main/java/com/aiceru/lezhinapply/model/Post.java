@@ -1,9 +1,12 @@
 package com.aiceru.lezhinapply.model;
 
 import com.aiceru.lezhinapply.util.filter.TimeLineView;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by iceru on 2016. 7. 30..
@@ -14,12 +17,12 @@ public class Post {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "post_id")
-  private int id;
+  private int postId;
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "user_id")
   @TimeLineView
-  private User createUser;
+  private User createdBy;
 
   @Column(name = "time")
   @Temporal(TemporalType.TIMESTAMP)
@@ -28,29 +31,37 @@ public class Post {
   @Column(name = "content")
   private String content;
 
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(name = "FOLLOWINGPOSTS",
+          joinColumns = {@JoinColumn(name = "post_id", nullable = false)},
+          inverseJoinColumns = {@JoinColumn(name = "user_id", nullable = false)})
+  @JsonIgnore
+  private List<User> followers;
+
   public Post() {
   }
 
-  public Post(User createUser, Date timeStamp, String content) {
-    this.createUser = createUser;
+  public Post(User createdBy, Date timeStamp, String content) {
+    this.createdBy = createdBy;
     this.timeStamp = timeStamp;
     this.content = content;
+    this.followers = new ArrayList<User>();
   }
 
-  public int getId() {
-    return id;
+  public int getPostId() {
+    return postId;
   }
 
-  public void setId(int id) {
-    this.id = id;
+  public void setPostId(int postId) {
+    this.postId = postId;
   }
 
-  public User getCreateUser() {
-    return createUser;
+  public User getCreatedBy() {
+    return createdBy;
   }
 
-  public void setCreateUser(User createUser) {
-    this.createUser = createUser;
+  public void setCreatedBy(User createdBy) {
+    this.createdBy = createdBy;
   }
 
   public Date getTimeStamp() {
@@ -69,11 +80,23 @@ public class Post {
     this.content = content;
   }
 
+  public List<User> getFollowers() {
+    return followers;
+  }
+
+  public void setFollowers(List<User> followers) {
+    this.followers = followers;
+  }
+
+  public boolean addFollower(User user) {
+    return followers.add(user);
+  }
+
   @Override
   public String toString() {
     return "Post{" +
-            "id=" + id +
-            ", createUser=" + createUser +
+            "postId=" + postId +
+            ", createdBy=" + createdBy +
             ", timeStamp=" + timeStamp +
             ", content='" + content + '\'' +
             '}';
@@ -86,14 +109,14 @@ public class Post {
 
     Post post = (Post) o;
 
-    return ( id == post.getId() &&
-            createUser.equals(post.getCreateUser()) &&
+    return ( postId == post.getPostId() &&
+            createdBy.equals(post.getCreatedBy()) &&
             (timeStamp.compareTo(post.getTimeStamp()) == 0 || post.getTimeStamp().compareTo(timeStamp) == 0) &&
             content.equals(post.getContent()) );
   }
 
   @Override
   public int hashCode() {
-    return getId();
+    return getPostId();
   }
 }

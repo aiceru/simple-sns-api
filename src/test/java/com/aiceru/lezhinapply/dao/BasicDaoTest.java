@@ -16,17 +16,17 @@ public class BasicDaoTest extends HibernateDaoTest {
   @Test
   public void testPersist() {
     userDao.getCurrentSessionWithTransaction();
-    gasfard.setId(userDao.persist(gasfard));
-    loyd.setId(userDao.persist(loyd));
-    assertEquals(gasfard.getId()+1, loyd.getId());
+    gasfard.setUserId(userDao.persist(gasfard));
+    loyd.setUserId(userDao.persist(loyd));
+    assertEquals(gasfard.getUserId()+1, loyd.getUserId());
     userDao.closeCurrentSessionWithTransaction();
 
     postDao.getCurrentSessionWithTransaction();
-    helpme.setId(postDao.persist(helpme));
-    killyou.setId(postDao.persist(killyou));
-    please.setId(postDao.persist(please));
-    nono.setId(postDao.persist(nono));
-    assertEquals(helpme.getId()+1, killyou.getId());
+    helpme.setPostId(postDao.persist(helpme));
+    killyou.setPostId(postDao.persist(killyou));
+    please.setPostId(postDao.persist(please));
+    nono.setPostId(postDao.persist(nono));
+    assertEquals(helpme.getPostId()+1, killyou.getPostId());
     postDao.closeCurrentSessionWithTransaction();
   }
 
@@ -34,34 +34,34 @@ public class BasicDaoTest extends HibernateDaoTest {
   public void testFindById() {
     userDao.getCurrentSessionWithTransaction();
 
-    User foundUser = userDao.findById(gasfard.getId());
+    User foundUser = userDao.findById(gasfard.getUserId());
     assertNull(foundUser);
 
-    gasfard.setId(userDao.persist(gasfard));
-    loyd.setId(userDao.persist(loyd));
+    gasfard.setUserId(userDao.persist(gasfard));
+    loyd.setUserId(userDao.persist(loyd));
 
-    foundUser = userDao.findById(gasfard.getId());
+    foundUser = userDao.findById(gasfard.getUserId());
     assertEquals(gasfard, foundUser);
 
-    foundUser = userDao.findById(loyd.getId());
+    foundUser = userDao.findById(loyd.getUserId());
     assertEquals(loyd, foundUser);
 
     userDao.closeCurrentSessionWithTransaction();
 
     postDao.getCurrentSessionWithTransaction();
 
-    Post foundPost = postDao.findById(helpme.getId());
+    Post foundPost = postDao.findById(helpme.getPostId());
     assertNull(foundPost);
 
-    helpme.setId(postDao.persist(helpme));
-    killyou.setId(postDao.persist(killyou));
-    please.setId(postDao.persist(please));
-    nono.setId(postDao.persist(nono));
+    helpme.setPostId(postDao.persist(helpme));
+    killyou.setPostId(postDao.persist(killyou));
+    please.setPostId(postDao.persist(please));
+    nono.setPostId(postDao.persist(nono));
 
-    foundPost = postDao.findById(helpme.getId());
+    foundPost = postDao.findById(helpme.getPostId());
     assertEquals(helpme, foundPost);
 
-    foundPost = postDao.findById(killyou.getId());
+    foundPost = postDao.findById(killyou.getPostId());
     assertEquals(killyou, foundPost);
 
     postDao.closeCurrentSessionWithTransaction();
@@ -74,8 +74,8 @@ public class BasicDaoTest extends HibernateDaoTest {
     List<User> users = userDao.findAll();
     assertEquals(0, users.size());
 
-    gasfard.setId(userDao.persist(gasfard));
-    loyd.setId(userDao.persist(loyd));
+    gasfard.setUserId(userDao.persist(gasfard));
+    loyd.setUserId(userDao.persist(loyd));
 
     users = userDao.findAll();
     assertEquals(users.size(), 2);
@@ -89,10 +89,10 @@ public class BasicDaoTest extends HibernateDaoTest {
     List<Post> posts = postDao.findAll();
     assertEquals(0, posts.size());
 
-    helpme.setId(postDao.persist(helpme));
-    killyou.setId(postDao.persist(killyou));
-    please.setId(postDao.persist(please));
-    nono.setId(postDao.persist(nono));
+    helpme.setPostId(postDao.persist(helpme));
+    killyou.setPostId(postDao.persist(killyou));
+    please.setPostId(postDao.persist(please));
+    nono.setPostId(postDao.persist(nono));
 
     posts = postDao.findAll();
     assertEquals(4, posts.size());
@@ -108,77 +108,77 @@ public class BasicDaoTest extends HibernateDaoTest {
   public void testUpdate() {
     userDao.getCurrentSessionWithTransaction();
 
-    gasfard.setId(userDao.persist(gasfard));
-    loyd.setId(userDao.persist(loyd));
+    gasfard.setUserId(userDao.persist(gasfard));
+    loyd.setUserId(userDao.persist(loyd));
 
     gasfard.setName("gasfard revisited");
     userDao.update(gasfard);
 
-    assertEquals("gasfard revisited", userDao.findById(gasfard.getId()).getName());
+    assertEquals("gasfard revisited", userDao.findById(gasfard.getUserId()).getName());
     userDao.closeCurrentSessionWithTransaction();
 
     postDao.getCurrentSessionWithTransaction();
 
-    helpme.setId(postDao.persist(helpme));
-    killyou.setId(postDao.persist(killyou));
-    please.setId(postDao.persist(please));
-    nono.setId(postDao.persist(nono));
+    helpme.setPostId(postDao.persist(helpme));
+    killyou.setPostId(postDao.persist(killyou));
+    please.setPostId(postDao.persist(please));
+    nono.setPostId(postDao.persist(nono));
 
     nono.setContent("no mercy");
     postDao.update(nono);
 
-    assertEquals("no mercy", postDao.findById(nono.getId()).getContent());
+    assertEquals("no mercy", postDao.findById(nono.getPostId()).getContent());
     postDao.closeCurrentSessionWithTransaction();
   }
 
   @Test
   public void testDelete() {
     userDao.getCurrentSessionWithTransaction();
-    gasfard.setId(userDao.persist(gasfard));
-    User user = userDao.findById(gasfard.getId());
+    gasfard.setUserId(userDao.persist(gasfard));
+    User user = userDao.findById(gasfard.getUserId());
     assertEquals(gasfard, user);
     userDao.closeCurrentSessionWithTransaction();
 
     postDao.getCurrentSessionWithTransaction();
-    helpme.setId(postDao.persist(helpme));
-    Post post = postDao.findById(helpme.getId());
+    helpme.setPostId(postDao.persist(helpme));
+    Post post = postDao.findById(helpme.getPostId());
     assertEquals(helpme, post);
 
     postDao.delete(post);
-    assertNull(postDao.findById(helpme.getId()));
+    assertNull(postDao.findById(helpme.getPostId()));
     postDao.closeCurrentSessionWithTransaction();
 
     userDao.getCurrentSessionWithTransaction();
     userDao.delete(user);
-    assertNull(userDao.findById(gasfard.getId()));
+    assertNull(userDao.findById(gasfard.getUserId()));
     userDao.closeCurrentSessionWithTransaction();
   }
 
   @Test
   public void testDeleteAll() {
     userDao.getCurrentSessionWithTransaction();
-    gasfard.setId(userDao.persist(gasfard));
-    loyd.setId(userDao.persist(loyd));
+    gasfard.setUserId(userDao.persist(gasfard));
+    loyd.setUserId(userDao.persist(loyd));
     userDao.closeCurrentSessionWithTransaction();
 
     postDao.getCurrentSessionWithTransaction();
-    helpme.setId(postDao.persist(helpme));
-    killyou.setId(postDao.persist(killyou));
-    please.setId(postDao.persist(please));
-    nono.setId(postDao.persist(nono));
+    helpme.setPostId(postDao.persist(helpme));
+    killyou.setPostId(postDao.persist(killyou));
+    please.setPostId(postDao.persist(please));
+    nono.setPostId(postDao.persist(nono));
 
-    assertEquals(helpme, postDao.findById(helpme.getId()));
+    assertEquals(helpme, postDao.findById(helpme.getPostId()));
     assertEquals(4, postDao.findAll().size());
     postDao.deleteAll();
-    assertNull(postDao.findById(helpme.getId()));
+    assertNull(postDao.findById(helpme.getPostId()));
     assertEquals(0, postDao.findAll().size());
     postDao.closeCurrentSessionWithTransaction();
 
     userDao.getCurrentSessionWithTransaction();
-    assertEquals(gasfard, userDao.findById(gasfard.getId()));
+    assertEquals(gasfard, userDao.findById(gasfard.getUserId()));
     assertEquals(2, userDao.findAll().size());
     userDao.deleteAll();
-    assertNull(userDao.findById(gasfard.getId()));
+    assertNull(userDao.findById(gasfard.getUserId()));
     assertEquals(0, userDao.findAll().size());
     userDao.closeCurrentSessionWithTransaction();
   }

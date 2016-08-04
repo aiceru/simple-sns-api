@@ -31,7 +31,7 @@ public class FundamentalModelMappingTest {
     Session session = factory.openSession();
     session.beginTransaction();
     Integer id = (Integer) session.save(testUser);
-    testUser.setId(id);
+    testUser.setUserId(id);
     session.getTransaction().commit();
     session.close();
 
@@ -51,7 +51,7 @@ public class FundamentalModelMappingTest {
 
     session.beginTransaction();
     Integer id = (Integer) session.save(testPost);
-    testPost.setId(id);
+    testPost.setPostId(id);
     session.getTransaction().commit();
     session.close();
 

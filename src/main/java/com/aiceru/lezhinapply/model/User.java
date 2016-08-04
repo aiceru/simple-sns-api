@@ -1,6 +1,5 @@
 package com.aiceru.lezhinapply.model;
 
-import com.aiceru.lezhinapply.util.filter.TimeLineView;
 import com.aiceru.lezhinapply.util.filter.UserDetailView;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -19,7 +18,7 @@ public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "user_id")
-  private int id;
+  private int userId;
 
   @Column(name = "name")
   private String name;
@@ -34,19 +33,22 @@ public class User {
   @JsonIgnore
   private List<User> followings;
 
-  @ManyToMany(fetch = FetchType.EAGER, mappedBy = "followings")
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(name = "FOLLOWINGS",
+          joinColumns = {@JoinColumn(name = "following_id", nullable = false)},
+          inverseJoinColumns = {@JoinColumn(name = "follower_id", nullable = false)})
   @JsonIgnore
   private List<User> followers;
 
-  @OneToMany(targetEntity = Post.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "createUser")
+  @OneToMany(targetEntity = Post.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "createdBy")
   @UserDetailView
   private List<Post> posts;
 
   // TODO : Confirm this!!
-  @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "FOLLOWINGPOSTS",
-          joinColumns = @JoinColumn(name = "user_id"),
-          inverseJoinColumns = @JoinColumn(name = "post_id"))
+          joinColumns = {@JoinColumn(name = "user_id", nullable = false)},
+          inverseJoinColumns = {@JoinColumn(name = "post_id", nullable = false)})
   @JsonIgnore
   private List<Post> followingPosts;
 
@@ -63,12 +65,12 @@ public class User {
     this.email = email;
   }
 
-  public int getId() {
-    return id;
+  public int getUserId() {
+    return userId;
   }
 
-  public void setId(int id) {
-    this.id = id;
+  public void setUserId(int userId) {
+    this.userId = userId;
   }
 
   public String getName() {
@@ -138,7 +140,7 @@ public class User {
   @Override
   public String toString() {
     return "User{" +
-            "id=" + id +
+            "userId=" + userId +
             ", name='" + name + '\'' +
             ", email='" + email + '\'' +
             '}';
@@ -151,13 +153,13 @@ public class User {
 
     User user = (User) o;
 
-    return ( id == user.getId() &&
+    return ( userId == user.getUserId() &&
             name.equals(user.getName()) &&
             email.equals(user.getEmail()) );
   }
 
   @Override
   public int hashCode() {
-    return getId();
+    return getUserId();
   }
 }

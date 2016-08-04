@@ -28,5 +28,5 @@ dependencies {
 
 test {
     exclude 'com/aiceru/lezhinapply/model/*'
-    exclude 'com/aiceru/lezhinapply/service/UserServiceTest.class'
+    exclude 'com/aiceru/lezhinapply/resource/UserServiceTest.class'
 }

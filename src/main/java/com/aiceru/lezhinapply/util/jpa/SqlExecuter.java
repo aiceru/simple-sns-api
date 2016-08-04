@@ -2,10 +2,13 @@ package com.aiceru.lezhinapply.util.jpa;
 
 import com.aiceru.lezhinapply.model.Post;
 import com.aiceru.lezhinapply.model.User;
+import com.fasterxml.classmate.AnnotationConfiguration;
+import com.fasterxml.classmate.AnnotationInclusion;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.io.*;
+import java.lang.annotation.Annotation;
 import java.util.List;
 
 /**
@@ -19,7 +22,6 @@ public class SqlExecuter {
     session = HibernateUtil.getSessionFactory().getCurrentSession();
     tx = session.beginTransaction();
 
-    //FileReader fileReader = new FileReader(filename);
     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));//fileReader);
 
     String sql = bufferedReader.readLine();

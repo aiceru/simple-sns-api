@@ -61,13 +61,13 @@ public class CascadingTest extends HibernateDaoTest {
     gasfard.addPost(please);
     loyd.addPost(killyou);
     loyd.addPost(nono);
-    gasfard.setId(userDao.persist(gasfard));
-    loyd.setId(userDao.persist(loyd));
-    santiago.setId(userDao.persist(santiago));
+    gasfard.setUserId(userDao.persist(gasfard));
+    loyd.setUserId(userDao.persist(loyd));
+    santiago.setUserId(userDao.persist(santiago));
 
-    User gasfardFromDao = userDao.findById(gasfard.getId());
-    User loydFromDao = userDao.findById(loyd.getId());
-    User santiagoFromDao = userDao.findById(santiago.getId());
+    User gasfardFromDao = userDao.findById(gasfard.getUserId());
+    User loydFromDao = userDao.findById(loyd.getUserId());
+    User santiagoFromDao = userDao.findById(santiago.getUserId());
 
     /* gasfard <--follows--> santiago --follows--> loyd */
     santiagoFromDao.addFollowing(loydFromDao);
@@ -81,7 +81,7 @@ public class CascadingTest extends HibernateDaoTest {
     userDao.update(loydFromDao);
     userDao.update(santiagoFromDao);
 
-    User testUser = userDao.findById(santiago.getId());
+    User testUser = userDao.findById(santiago.getUserId());
     assertEquals(santiago, testUser);
     assertEquals(2, testUser.getFollowings().size());
     assertEquals(1, testUser.getFollowers().size());
@@ -114,13 +114,13 @@ public class CascadingTest extends HibernateDaoTest {
   public void testPushPost() {
     userDao.getCurrentSessionWithTransaction();
 
-    gasfard.setId(userDao.persist(gasfard));
-    loyd.setId(userDao.persist(loyd));
-    santiago.setId(userDao.persist(santiago));
+    gasfard.setUserId(userDao.persist(gasfard));
+    loyd.setUserId(userDao.persist(loyd));
+    santiago.setUserId(userDao.persist(santiago));
 
-    User gasfardFromDao = userDao.findById(gasfard.getId());
-    User loydFromDao = userDao.findById(loyd.getId());
-    User santiagoFromDao = userDao.findById(santiago.getId());
+    User gasfardFromDao = userDao.findById(gasfard.getUserId());
+    User loydFromDao = userDao.findById(loyd.getUserId());
+    User santiagoFromDao = userDao.findById(santiago.getUserId());
 
     gasfardFromDao.addFollowing(santiagoFromDao);
     santiagoFromDao.addFollower(gasfardFromDao);
@@ -137,7 +137,7 @@ public class CascadingTest extends HibernateDaoTest {
     userDao.closeCurrentSessionWithTransaction();
     userDao.getCurrentSessionWithTransaction();
 
-    User testUser = userDao.findById(gasfardFromDao.getId());
+    User testUser = userDao.findById(gasfardFromDao.getUserId());
     assertEquals(1, testUser.getFollowingPosts().size());
     assertTrue(testUser.getFollowingPosts().contains(santiagoFromDao.getPosts().get(0)));
 
