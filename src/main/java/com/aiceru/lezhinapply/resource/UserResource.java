@@ -70,8 +70,7 @@ public class UserResource {
     user.setName(updateUser.getName());
     user.setEmail(updateUser.getEmail());
     userDao.closeCurrentSessionWithTransaction();
-    return Response.created(uriInfo.getAbsolutePath()).entity(
-            new GenericEntity<User>(user, user.getClass())).build();
+    return Response.ok(user, MediaType.APPLICATION_JSON).build();
   }
 
   @DELETE
