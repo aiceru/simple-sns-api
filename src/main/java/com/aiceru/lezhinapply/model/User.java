@@ -2,6 +2,8 @@ package com.aiceru.lezhinapply.model;
 
 import com.aiceru.lezhinapply.util.filter.UserDetailView;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -26,14 +28,14 @@ public class User {
   @Column(name = "email")
   private String email;
 
-  @ManyToMany(fetch = FetchType.EAGER)
+  @ManyToMany
   @JoinTable(name = "FOLLOWINGS",
           joinColumns = {@JoinColumn(name = "follower_id", nullable = false)},
           inverseJoinColumns = {@JoinColumn(name = "following_id", nullable = false)})
   @JsonIgnore
   private List<User> followings;
 
-  @ManyToMany(fetch = FetchType.EAGER)
+  @ManyToMany
   @JoinTable(name = "FOLLOWINGS",
           joinColumns = {@JoinColumn(name = "following_id", nullable = false)},
           inverseJoinColumns = {@JoinColumn(name = "follower_id", nullable = false)})
@@ -45,7 +47,7 @@ public class User {
   private List<Post> posts;
 
   // TODO : Confirm this!!
-  @ManyToMany(fetch = FetchType.EAGER)
+  @ManyToMany
   @JoinTable(name = "FOLLOWINGPOSTS",
           joinColumns = {@JoinColumn(name = "user_id", nullable = false)},
           inverseJoinColumns = {@JoinColumn(name = "post_id", nullable = false)})

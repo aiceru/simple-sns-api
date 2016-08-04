@@ -31,7 +31,7 @@ public class Post {
   @Column(name = "content")
   private String content;
 
-  @ManyToMany(fetch = FetchType.EAGER)
+  @ManyToMany
   @JoinTable(name = "FOLLOWINGPOSTS",
           joinColumns = {@JoinColumn(name = "post_id", nullable = false)},
           inverseJoinColumns = {@JoinColumn(name = "user_id", nullable = false)})
