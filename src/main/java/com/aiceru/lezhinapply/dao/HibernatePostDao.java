@@ -3,6 +3,7 @@ package com.aiceru.lezhinapply.dao;
 import com.aiceru.lezhinapply.model.Post;
 import com.aiceru.lezhinapply.util.jpa.HibernateUtil;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import java.util.List;
@@ -10,30 +11,10 @@ import java.util.List;
 /**
  * Created by iceru on 2016. 7. 31..
  */
-public class HibernatePostDao implements DaoInterface<Post, Integer> {
-  private Session session;
-  private Transaction transaction;
+public class HibernatePostDao extends Dao<Post,Integer> {
 
-  @Override
-  public void getCurrentSession() {
-    session = HibernateUtil.getSessionFactory().getCurrentSession();
-  }
-
-  @Override
-  public void getCurrentSessionWithTransaction() {
-    getCurrentSession();
-    transaction = session.beginTransaction();
-  }
-
-  @Override
-  public void closeCurrentSession() {
-    session.close();
-  }
-
-  @Override
-  public void closeCurrentSessionWithTransaction() {
-    transaction.commit();
-    closeCurrentSession();
+  public HibernatePostDao(SessionFactory sf) {
+    this.setSessionFactory(sf);
   }
 
   @Override

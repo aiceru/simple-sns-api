@@ -3,6 +3,7 @@ package com.aiceru.lezhinapply.dao;
 import com.aiceru.lezhinapply.model.User;
 import com.aiceru.lezhinapply.util.jpa.HibernateUtil;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import java.util.List;
@@ -10,31 +11,10 @@ import java.util.List;
 /**
  * Created by iceru on 2016. 7. 31..
  */
-public class HibernateUserDao implements DaoInterface<User, Integer> {
+public class HibernateUserDao extends Dao<User,Integer> {
 
-  private Session session;
-  private Transaction transaction;
-
-  @Override
-  public void getCurrentSession() {
-    session = HibernateUtil.getSessionFactory().getCurrentSession();
-  }
-
-  @Override
-  public void getCurrentSessionWithTransaction() {
-    getCurrentSession();
-    transaction = session.beginTransaction();
-  }
-
-  @Override
-  public void closeCurrentSession() {
-    session.close();
-  }
-
-  @Override
-  public void closeCurrentSessionWithTransaction() {
-    transaction.commit();
-    closeCurrentSession();
+  public HibernateUserDao(SessionFactory sf) {
+    this.setSessionFactory(sf);
   }
 
   @Override

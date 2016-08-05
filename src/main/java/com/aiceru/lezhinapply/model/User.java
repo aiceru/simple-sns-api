@@ -127,16 +127,32 @@ public class User {
     return followings.add(u);
   }
 
+  public boolean removeFollowing(User u) {
+    return followings.remove(u);
+  }
+
   public boolean addFollower(User u) {
     return followers.add(u);
+  }
+
+  public boolean removeFollower(User u) {
+    return followers.remove(u);
   }
 
   public boolean addPost(Post p) {
     return posts.add(p);
   }
 
+  public boolean removePost(Post p) {
+    return posts.remove(p);
+  }
+
   public boolean addFollowingPost(Post p) {
     return followingPosts.add(p);
+  }
+
+  public boolean removeFollowingPost(Post p) {
+    return followingPosts.remove(p);
   }
 
   @Override

@@ -2,6 +2,7 @@ package com.aiceru.lezhinapply.dao;
 
 import com.aiceru.lezhinapply.model.Post;
 import com.aiceru.lezhinapply.model.User;
+import com.aiceru.lezhinapply.util.jpa.HibernateUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -16,8 +17,8 @@ import static org.junit.Assert.assertEquals;
  */
 @Ignore
 class HibernateDaoTest {
-  DaoInterface<User, Integer> userDao = new HibernateUserDao();
-  DaoInterface<Post, Integer> postDao = new HibernatePostDao();
+  Dao<User, Integer> userDao = new HibernateUserDao(HibernateUtil.getSessionFactory());
+  Dao<Post, Integer> postDao = new HibernatePostDao(HibernateUtil.getSessionFactory());
   User gasfard;
   User loyd;
   Post helpme, please;
@@ -34,18 +35,19 @@ class HibernateDaoTest {
     killyou = new Post(loyd, new Date(new Date().getTime() + (HOUR)), "no, I'll kill you :D");
     please = new Post(gasfard, new Date(new Date().getTime() + (2 * HOUR)), "please dontdothat");
     nono = new Post(loyd, new Date(new Date().getTime() + (3 * HOUR)), "that's nono");
+
+    userDao.getCurrentSession();
+    userDao.beginTransaction();
   }
 
   @After
   public void teardown() {
-    userDao.getCurrentSessionWithTransaction();
-    postDao.getCurrentSession();
     /* all post records will be delete by cascading */
     userDao.deleteAll();
 
     assertEquals(0, postDao.findAll().size());
     assertEquals(0, userDao.findAll().size());
-    userDao.closeCurrentSessionWithTransaction();
-    postDao.closeCurrentSession();
+
+    userDao.commit();
   }
 }

@@ -34,29 +34,19 @@ public class CascadingTest extends HibernateDaoTest {
 
   @Test
   public void testPersistAndDeleteUserWithPost() {
-    userDao.getCurrentSessionWithTransaction();
     userDao.persist(santiago);
-    userDao.closeCurrentSessionWithTransaction();
 
-    postDao.getCurrentSessionWithTransaction();
     List<Post> postList = postDao.findAll();
     assertTrue(postList.contains(santiagoPost));
-    postDao.closeCurrentSessionWithTransaction();
 
-    userDao.getCurrentSessionWithTransaction();
     userDao.delete(santiago);
-    userDao.closeCurrentSessionWithTransaction();
 
-    postDao.getCurrentSessionWithTransaction();
     postList = postDao.findAll();
     assertFalse(postList.contains(santiagoPost));
-    postDao.closeCurrentSessionWithTransaction();
   }
 
   @Test
   public void testFollowingUsers() {
-    userDao.getCurrentSessionWithTransaction();
-
     gasfard.addPost(helpme);
     gasfard.addPost(please);
     loyd.addPost(killyou);
@@ -106,14 +96,10 @@ public class CascadingTest extends HibernateDaoTest {
         assertTrue(user.getFollowings().isEmpty());
       }
     }
-
-    userDao.closeCurrentSessionWithTransaction();
   }
 
   @Test
   public void testPushPost() {
-    userDao.getCurrentSessionWithTransaction();
-
     gasfard.setUserId(userDao.persist(gasfard));
     loyd.setUserId(userDao.persist(loyd));
     santiago.setUserId(userDao.persist(santiago));
@@ -134,13 +120,9 @@ public class CascadingTest extends HibernateDaoTest {
     for(User f : followers) {
       f.addFollowingPost(santiagoFromDao.getPosts().get(0));
     }
-    userDao.closeCurrentSessionWithTransaction();
-    userDao.getCurrentSessionWithTransaction();
 
     User testUser = userDao.findById(gasfardFromDao.getUserId());
     assertEquals(1, testUser.getFollowingPosts().size());
     assertTrue(testUser.getFollowingPosts().contains(santiagoFromDao.getPosts().get(0)));
-
-    userDao.closeCurrentSessionWithTransaction();
   }
 }
