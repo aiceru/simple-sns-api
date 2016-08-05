@@ -15,6 +15,9 @@ import static org.junit.Assert.assertNull;
 public class BasicDaoTest extends HibernateDaoTest {
   @Test
   public void testPersist() {
+    userDao.getCurrentSession();
+    userDao.beginTransaction();
+
     gasfard.setUserId(userDao.persist(gasfard));
     loyd.setUserId(userDao.persist(loyd));
     assertEquals(gasfard.getUserId()+1, loyd.getUserId());
@@ -24,10 +27,15 @@ public class BasicDaoTest extends HibernateDaoTest {
     please.setPostId(postDao.persist(please));
     nono.setPostId(postDao.persist(nono));
     assertEquals(helpme.getPostId()+1, killyou.getPostId());
+
+    userDao.commit();
   }
 
   @Test
   public void testFindById() {
+    userDao.getCurrentSession();
+    userDao.beginTransaction();
+
     User foundUser = userDao.findById(gasfard.getUserId());
     assertNull(foundUser);
 
@@ -53,10 +61,15 @@ public class BasicDaoTest extends HibernateDaoTest {
 
     foundPost = postDao.findById(killyou.getPostId());
     assertEquals(killyou, foundPost);
+
+    userDao.commit();
   }
 
   @Test
   public void testFindAll() {
+    userDao.getCurrentSession();
+    userDao.beginTransaction();
+
     List<User> users = userDao.findAll();
     assertEquals(0, users.size());
 
@@ -82,10 +95,15 @@ public class BasicDaoTest extends HibernateDaoTest {
     assertEquals(killyou, posts.get(1));
     assertEquals(please, posts.get(2));
     assertEquals(nono, posts.get(3));
+
+    userDao.commit();
   }
 
   @Test
   public void testUpdate() {
+    userDao.getCurrentSession();
+    userDao.beginTransaction();
+
     gasfard.setUserId(userDao.persist(gasfard));
     loyd.setUserId(userDao.persist(loyd));
 
@@ -103,10 +121,15 @@ public class BasicDaoTest extends HibernateDaoTest {
     postDao.update(nono);
 
     assertEquals("no mercy", postDao.findById(nono.getPostId()).getContent());
+
+    userDao.commit();
   }
 
   @Test
   public void testDelete() {
+    userDao.getCurrentSession();
+    userDao.beginTransaction();
+
     gasfard.setUserId(userDao.persist(gasfard));
     User user = userDao.findById(gasfard.getUserId());
     assertEquals(gasfard, user);
@@ -120,10 +143,15 @@ public class BasicDaoTest extends HibernateDaoTest {
 
     userDao.delete(user);
     assertNull(userDao.findById(gasfard.getUserId()));
+
+    userDao.commit();
   }
 
   @Test
   public void testDeleteAll() {
+    userDao.getCurrentSession();
+    userDao.beginTransaction();
+
     gasfard.setUserId(userDao.persist(gasfard));
     loyd.setUserId(userDao.persist(loyd));
 
@@ -143,5 +171,7 @@ public class BasicDaoTest extends HibernateDaoTest {
     userDao.deleteAll();
     assertNull(userDao.findById(gasfard.getUserId()));
     assertEquals(0, userDao.findAll().size());
+
+    userDao.commit();
   }
 }

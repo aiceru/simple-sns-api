@@ -2,13 +2,14 @@ package com.aiceru.lezhinapply.model;
 
 import com.aiceru.lezhinapply.util.filter.UserDetailView;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import java.util.*;
 
 /**
  * Created by iceru on 2016. 7. 29..
@@ -44,6 +45,7 @@ public class User {
 
   @OneToMany(targetEntity = Post.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "createdBy")
   @UserDetailView
+  @OrderBy("time DESC")
   private List<Post> posts;
 
   // TODO : Confirm this!!
@@ -51,6 +53,7 @@ public class User {
   @JoinTable(name = "FOLLOWINGPOSTS",
           joinColumns = {@JoinColumn(name = "user_id", nullable = false)},
           inverseJoinColumns = {@JoinColumn(name = "post_id", nullable = false)})
+  @OrderBy("time DESC")
   @JsonIgnore
   private List<Post> followingPosts;
 

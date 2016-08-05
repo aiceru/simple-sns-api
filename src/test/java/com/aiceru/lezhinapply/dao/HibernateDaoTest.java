@@ -9,6 +9,7 @@ import org.junit.Ignore;
 
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -25,7 +26,6 @@ class HibernateDaoTest {
   Post killyou, nono;
 
   private static final long HOUR = 3600 * 1000;
-  private static final String DB_URL = "jdbc:h2:mem:simple-sns-db;";
 
   @Before
   public void setup() throws SQLException {
@@ -35,13 +35,13 @@ class HibernateDaoTest {
     killyou = new Post(loyd, new Date(new Date().getTime() + (HOUR)), "no, I'll kill you :D");
     please = new Post(gasfard, new Date(new Date().getTime() + (2 * HOUR)), "please dontdothat");
     nono = new Post(loyd, new Date(new Date().getTime() + (3 * HOUR)), "that's nono");
-
-    userDao.getCurrentSession();
-    userDao.beginTransaction();
   }
 
   @After
   public void teardown() {
+    userDao.getCurrentSession();
+    userDao.beginTransaction();
+
     /* all post records will be delete by cascading */
     userDao.deleteAll();
 

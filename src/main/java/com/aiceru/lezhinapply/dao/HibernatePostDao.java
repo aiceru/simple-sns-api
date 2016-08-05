@@ -19,32 +19,37 @@ public class HibernatePostDao extends Dao<Post,Integer> {
 
   @Override
   public Integer persist(Post entity) {
+    assert tx.isActive();
     return (Integer) session.save(entity);
   }
 
   @Override
   public void update(Post entity) {
+    assert tx.isActive();
     session.update(entity);
   }
 
   @Override
   public Post findById(Integer id) {
+    assert tx.isActive();
     return session.get(Post.class, id);
   }
 
   @Override
   public void delete(Post entity) {
+    assert tx.isActive();
     session.delete(entity);
   }
 
   @Override
   public List<Post> findAll() {
-    return session.createQuery("from Post p").list();
+    return session.createQuery("from Post").list();
   }
 
   @Override
   public void deleteAll() {
-    List<Post> posts = session.createQuery("from Post p").list();
+    assert tx.isActive();
+    List<Post> posts = session.createQuery("from Post").list();
     for(Post post : posts) {
       session.delete(post);
     }

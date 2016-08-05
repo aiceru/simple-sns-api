@@ -1,5 +1,6 @@
 package com.aiceru.lezhinapply.dao;
 
+import com.aiceru.lezhinapply.model.Post;
 import com.aiceru.lezhinapply.model.User;
 import com.aiceru.lezhinapply.util.jpa.HibernateUtil;
 import org.hibernate.Session;
@@ -19,21 +20,25 @@ public class HibernateUserDao extends Dao<User,Integer> {
 
   @Override
   public Integer persist(User entity) {
+    assert tx.isActive();
     return (Integer) session.save(entity);
   }
 
   @Override
   public void update(User entity) {
+    assert tx.isActive();
     session.update(entity);
   }
 
   @Override
   public User findById(Integer id) {
+    assert tx.isActive();
     return session.get(User.class, id);
   }
 
   @Override
   public void delete(User entity) {
+    assert tx.isActive();
     session.delete(entity);
   }
 
@@ -44,6 +49,7 @@ public class HibernateUserDao extends Dao<User,Integer> {
 
   @Override
   public void deleteAll() {
+    assert tx.isActive();
     List<User> users = session.createQuery("from User").list();
     for(User user : users) {
       session.delete(user);
