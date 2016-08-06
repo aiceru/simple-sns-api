@@ -40,8 +40,16 @@ public class HibernateDao implements Dao {
     tx.commit();
   }
 
+  public void rollbackIfTxActive() {
+    if (tx != null && tx.isActive()) {
+      tx.rollback();
+    }
+  }
+
   public void closeCurrentSession() {
-    session.close();
+    if (session != null) {
+      session.close();
+    }
   }
 
   @Override

@@ -2,6 +2,8 @@ package com.aiceru.lezhinapply.resource;
 
 import com.aiceru.lezhinapply.dao.Dao;
 import com.aiceru.lezhinapply.dao.HibernateDao;
+import com.aiceru.lezhinapply.dao.TransactionManager;
+import com.aiceru.lezhinapply.dao.TransactionManager.TransactionCallable;
 import com.aiceru.lezhinapply.model.Post;
 import com.aiceru.lezhinapply.util.filter.TimeLineView;
 import com.aiceru.lezhinapply.util.jpa.HibernateUtil;
@@ -27,68 +29,74 @@ public class PostResource {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<Post> getPosts() {
-    dao.getCurrentSession();
-    dao.beginTransaction();
-
-    List<Post> posts = dao.findAll(Post.class);
-
-    dao.commit();
-    return posts;
+    List<Post> result = TransactionManager.doInTransaction(new TransactionCallable<List<Post>>() {
+      @Override
+      public List<Post> execute() {
+        return dao.findAll(Post.class);
+      }
+    }, dao);
+    return result;
   }
 
   @GET
   @Path("/{postId}")
-  public Response getPost(@PathParam("postId") int postid) {
-    dao.getCurrentSession();
-    dao.beginTransaction();
+  public Response getPost(@PathParam("postId") final int postid) {
+    Post result = TransactionManager.doInTransaction(new TransactionCallable<Post>() {
+      @Override
+      public Post execute() {
+        return dao.findById(Post.class, postid);
+      }
+    }, dao);
 
-    Response response;
-    Post post = dao.findById(Post.class, postid);
-    if (post == null) {
-      response = Response.status(Response.Status.NOT_FOUND).build();
-    } else {
-      response = Response.ok(post, MediaType.APPLICATION_JSON_TYPE).build();
+    if (result == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
     }
-
-    dao.commit();
-    return response;
+    return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
   }
 
   @PUT
   @Path("/{postId}")
   @TimeLineView
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response updatePost(Post updatepost, @PathParam("postId") int postid, @Context UriInfo uriInfo) {
-    dao.getCurrentSession();
-    dao.beginTransaction();
+  public Response updatePost(final Post updatepost, @PathParam("postId") final int postid, @Context UriInfo uriInfo) {
+    Post result = TransactionManager.doInTransaction(new TransactionCallable<Post>() {
+      @Override
+      public Post execute() {
+        Post post = dao.findById(Post.class, postid);
+        if (post == null) {
+          return null;
+        }
+        post.setContent(updatepost.getContent());
+        return post;
+      }
+    }, dao);
 
-    Post post = dao.findById(Post.class, postid);
-    if (post == null) {
-      dao.closeCurrentSession();
+    if (result == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
-    post.setContent(updatepost.getContent());
-
-    dao.commit();
-    return Response.ok(post, MediaType.APPLICATION_JSON_TYPE).build();
+    return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
   }
 
   @DELETE
   @Path("/{postId}")
   @TimeLineView
-  public Response deletePost(@PathParam("postId") int postid) {
-    dao.getCurrentSession();
-    dao.beginTransaction();
+  public Response deletePost(@PathParam("postId") final int postid) {
+    Post result = TransactionManager.doInTransaction(new TransactionCallable<Post>() {
+      @Override
+      public Post execute() {
+        Post post = dao.findById(Post.class, postid);
+        if (post == null) {
+          return null;
+        }
+        post.getCreatedBy().removePost(post);
+        dao.delete(post);
+        return post;
+      }
+    }, dao);
 
-    Post post = dao.findById(Post.class, postid);
-    if (post == null) {
-      dao.closeCurrentSession();
+    if (result == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
-    post.getCreatedBy().removePost(post);
-    dao.delete(post);
-
-    dao.commit();
-    return Response.ok(post, MediaType.APPLICATION_JSON_TYPE).build();
+    return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
   }
 }

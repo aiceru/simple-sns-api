@@ -12,6 +12,7 @@ public interface Dao {
   public void getCurrentSession();
   public void beginTransaction();
   public void commit();
+  public void rollbackIfTxActive();
   public void closeCurrentSession();
 
   public <T> int persist(T entity);

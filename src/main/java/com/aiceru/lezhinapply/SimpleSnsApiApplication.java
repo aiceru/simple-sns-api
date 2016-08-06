@@ -21,12 +21,12 @@ public class SimpleSnsApiApplication extends ResourceConfig {
     /*
      * For test only...
      */
-    try {
+    /*try {
       SqlExecuter.execute(
               this.getClass().getClassLoader().getResourceAsStream("/create_test_data.txt"));
       SqlExecuter.pustPosts();
     } catch (IOException e) {
       e.printStackTrace();
-    }
+    }*/
   }
 }
