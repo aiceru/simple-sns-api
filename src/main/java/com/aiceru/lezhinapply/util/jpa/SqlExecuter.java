@@ -2,13 +2,13 @@ package com.aiceru.lezhinapply.util.jpa;
 
 import com.aiceru.lezhinapply.model.Post;
 import com.aiceru.lezhinapply.model.User;
-import com.fasterxml.classmate.AnnotationConfiguration;
-import com.fasterxml.classmate.AnnotationInclusion;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import java.io.*;
-import java.lang.annotation.Annotation;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 
 /**

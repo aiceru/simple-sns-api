@@ -1,44 +1,23 @@
 package com.aiceru.lezhinapply.dao;
 
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by iceru on 2016. 7. 31..
  */
-public abstract class Dao<T, Id extends Serializable> {
-  static SessionFactory sessionFactory;
-  static Session session;
-  static Transaction tx;
+public interface Dao {
+  public void setSessionFactory(SessionFactory sf);
+  public void getCurrentSession();
+  public void beginTransaction();
+  public void commit();
+  public void closeCurrentSession();
 
-  public void setSessionFactory(SessionFactory sf) {
-    sessionFactory = sf;
-  }
-
-  public void getCurrentSession() {
-    session = sessionFactory.getCurrentSession();
-  }
-
-  public void beginTransaction() {
-    tx = session.beginTransaction();
-  }
-
-  public void commit() {
-    tx.commit();
-  }
-
-  public void closeCurrentSession() {
-    session.close();
-  }
-
-  public abstract Id persist(T entity);
-  public abstract void update(T entity);
-  public abstract T findById(Id id);
-  public abstract void delete(T entity);
-  public abstract List<T> findAll();
-  public abstract void deleteAll();
+  public <T> int persist(T entity);
+  public <T> void update(T entity);
+  public <T> T findById(final Class<T> type, int id);
+  public <T> void delete(T entity);
+  public <T> List<T> findAll(final Class<T> type);
+  public <T> void deleteAll(final Class<T> type);
 }

@@ -2,14 +2,11 @@ package com.aiceru.lezhinapply.model;
 
 import com.aiceru.lezhinapply.util.filter.UserDetailView;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.*;
 
 import javax.persistence.*;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by iceru on 2016. 7. 29..

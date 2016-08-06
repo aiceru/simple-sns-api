@@ -9,7 +9,6 @@ import org.junit.Ignore;
 
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -18,8 +17,7 @@ import static org.junit.Assert.assertEquals;
  */
 @Ignore
 class HibernateDaoTest {
-  Dao<User, Integer> userDao = new HibernateUserDao(HibernateUtil.getSessionFactory());
-  Dao<Post, Integer> postDao = new HibernatePostDao(HibernateUtil.getSessionFactory());
+  Dao dao = new HibernateDao(HibernateUtil.getSessionFactory());
   User gasfard;
   User loyd;
   Post helpme, please;
@@ -39,15 +37,15 @@ class HibernateDaoTest {
 
   @After
   public void teardown() {
-    userDao.getCurrentSession();
-    userDao.beginTransaction();
+    dao.getCurrentSession();
+    dao.beginTransaction();
 
     /* all post records will be delete by cascading */
-    userDao.deleteAll();
+    dao.deleteAll(Post.class);
+    dao.deleteAll(User.class);
+    assertEquals(0, dao.findAll(Post.class).size());
+    assertEquals(0, dao.findAll(User.class).size());
 
-    assertEquals(0, postDao.findAll().size());
-    assertEquals(0, userDao.findAll().size());
-
-    userDao.commit();
+    dao.commit();
   }
 }

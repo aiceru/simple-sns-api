@@ -34,38 +34,38 @@ public class CascadingTest extends HibernateDaoTest {
 
   @Test
   public void testPersistAndDeleteUserWithPost() {
-    userDao.getCurrentSession();
-    userDao.beginTransaction();
+    dao.getCurrentSession();
+    dao.beginTransaction();
 
-    userDao.persist(santiago);
+    dao.persist(santiago);
 
-    List<Post> postList = postDao.findAll();
+    List<Post> postList = dao.findAll(Post.class);
     assertTrue(postList.contains(santiagoPost));
 
-    userDao.delete(santiago);
+    dao.delete(santiago);
 
-    postList = postDao.findAll();
+    postList = dao.findAll(Post.class);
     assertFalse(postList.contains(santiagoPost));
 
-    userDao.commit();
+    dao.commit();
   }
 
   @Test
   public void testFollowingUsers() {
-    userDao.getCurrentSession();
-    userDao.beginTransaction();
+    dao.getCurrentSession();
+    dao.beginTransaction();
 
     gasfard.addPost(helpme);
     gasfard.addPost(please);
     loyd.addPost(killyou);
     loyd.addPost(nono);
-    gasfard.setUserId(userDao.persist(gasfard));
-    loyd.setUserId(userDao.persist(loyd));
-    santiago.setUserId(userDao.persist(santiago));
+    gasfard.setUserId(dao.persist(gasfard));
+    loyd.setUserId(dao.persist(loyd));
+    santiago.setUserId(dao.persist(santiago));
 
-    User gasfardFromDao = userDao.findById(gasfard.getUserId());
-    User loydFromDao = userDao.findById(loyd.getUserId());
-    User santiagoFromDao = userDao.findById(santiago.getUserId());
+    User gasfardFromDao = dao.findById(User.class, gasfard.getUserId());
+    User loydFromDao = dao.findById(User.class, loyd.getUserId());
+    User santiagoFromDao = dao.findById(User.class, santiago.getUserId());
 
     /* gasfard <--follows--> santiago --follows--> loyd */
     santiagoFromDao.addFollowing(loydFromDao);
@@ -75,11 +75,11 @@ public class CascadingTest extends HibernateDaoTest {
     santiagoFromDao.addFollower(gasfardFromDao);
     gasfardFromDao.addFollowing(santiagoFromDao);
 
-    userDao.update(gasfardFromDao);
-    userDao.update(loydFromDao);
-    userDao.update(santiagoFromDao);
+    dao.update(gasfardFromDao);
+    dao.update(loydFromDao);
+    dao.update(santiagoFromDao);
 
-    User testUser = userDao.findById(santiago.getUserId());
+    User testUser = dao.findById(User.class, santiago.getUserId());
     assertEquals(santiago, testUser);
     assertEquals(2, testUser.getFollowings().size());
     assertEquals(1, testUser.getFollowers().size());
@@ -105,21 +105,21 @@ public class CascadingTest extends HibernateDaoTest {
       }
     }
 
-    userDao.commit();
+    dao.commit();
   }
 
   @Test
   public void testPushPost() {
-    userDao.getCurrentSession();
-    userDao.beginTransaction();
+    dao.getCurrentSession();
+    dao.beginTransaction();
 
-    gasfard.setUserId(userDao.persist(gasfard));
-    loyd.setUserId(userDao.persist(loyd));
-    santiago.setUserId(userDao.persist(santiago));
+    gasfard.setUserId(dao.persist(gasfard));
+    loyd.setUserId(dao.persist(loyd));
+    santiago.setUserId(dao.persist(santiago));
 
-    User gasfardFromDao = userDao.findById(gasfard.getUserId());
-    User loydFromDao = userDao.findById(loyd.getUserId());
-    User santiagoFromDao = userDao.findById(santiago.getUserId());
+    User gasfardFromDao = dao.findById(User.class, gasfard.getUserId());
+    User loydFromDao = dao.findById(User.class, loyd.getUserId());
+    User santiagoFromDao = dao.findById(User.class, santiago.getUserId());
 
     gasfardFromDao.addFollowing(santiagoFromDao);
     santiagoFromDao.addFollower(gasfardFromDao);
@@ -134,10 +134,10 @@ public class CascadingTest extends HibernateDaoTest {
       f.addFollowingPost(santiagoFromDao.getPosts().get(0));
     }
 
-    User testUser = userDao.findById(gasfardFromDao.getUserId());
+    User testUser = dao.findById(User.class, gasfardFromDao.getUserId());
     assertEquals(1, testUser.getFollowingPosts().size());
     assertTrue(testUser.getFollowingPosts().contains(santiagoFromDao.getPosts().get(0)));
 
-    userDao.commit();
+    dao.commit();
   }
 }

@@ -1,8 +1,7 @@
 package com.aiceru.lezhinapply.resource;
 
 import com.aiceru.lezhinapply.dao.Dao;
-import com.aiceru.lezhinapply.dao.HibernatePostDao;
-import com.aiceru.lezhinapply.dao.HibernateUserDao;
+import com.aiceru.lezhinapply.dao.HibernateDao;
 import com.aiceru.lezhinapply.model.Post;
 import com.aiceru.lezhinapply.model.Target;
 import com.aiceru.lezhinapply.model.User;
@@ -21,24 +20,22 @@ import java.util.List;
  */
 @Path("/users")
 public class UserResource {
-  private Dao<User, Integer> userDao;
-  private Dao<Post, Integer> postDao;
+  private Dao dao;
 
   // to be moved to bean container later...
   public UserResource() {
-    userDao = new HibernateUserDao(HibernateUtil.getSessionFactory());
-    postDao = new HibernatePostDao(HibernateUtil.getSessionFactory());
+    dao = new HibernateDao(HibernateUtil.getSessionFactory());
   }
 
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   public Response createUser(User user, @Context UriInfo uriInfo) {
-    userDao.getCurrentSession();
-    userDao.beginTransaction();
+    dao.getCurrentSession();
+    dao.beginTransaction();
 
-    user.setUserId(userDao.persist(user));
+    user.setUserId(dao.persist(user));
 
-    userDao.commit();
+    dao.commit();
 
     UriBuilder builder = uriInfo.getAbsolutePathBuilder().path(Integer.toString(user.getUserId()));
     return Response.created(builder.build()).entity(
@@ -48,30 +45,30 @@ public class UserResource {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<User> getUsers() {
-    userDao.getCurrentSession();
-    userDao.beginTransaction();
+    dao.getCurrentSession();
+    dao.beginTransaction();
 
-    List<User> users = userDao.findAll();
+    List<User> users = dao.findAll(User.class);
 
-    userDao.commit();
+    dao.commit();
     return users;
   }
 
   @GET
   @Path("/{userId}")
   public Response getUser(@PathParam("userId") int userid) {
-    userDao.getCurrentSession();
-    userDao.beginTransaction();
+    dao.getCurrentSession();
+    dao.beginTransaction();
 
     Response response;
-    User user = userDao.findById(userid);
+    User user = dao.findById(User.class, userid);
     if (user == null) {
       response = Response.status(Response.Status.NOT_FOUND).build();
     } else {
       response = Response.ok(user, MediaType.APPLICATION_JSON_TYPE).build();
     }
 
-    userDao.commit();
+    dao.commit();
     return response;
   }
 
@@ -79,66 +76,66 @@ public class UserResource {
   @Path("/{userId}")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response updateUser(User updateuser, @PathParam("userId") int userid, @Context UriInfo uriInfo) {
-    userDao.getCurrentSession();
-    userDao.beginTransaction();
+    dao.getCurrentSession();
+    dao.beginTransaction();
 
-    User user = userDao.findById(userid);
+    User user = dao.findById(User.class, userid);
     if (user == null) {
-      userDao.closeCurrentSession();
+      dao.closeCurrentSession();
       return Response.status(Response.Status.NOT_FOUND).build();
     }
     user.setName(updateuser.getName());
     user.setEmail(updateuser.getEmail());
 
-    userDao.commit();
+    dao.commit();
     return Response.ok(user, MediaType.APPLICATION_JSON_TYPE).build();
   }
 
   @DELETE
   @Path("/{userId}")
   public Response deleteUser(@PathParam("userId") int userid) {
-    userDao.getCurrentSession();
-    userDao.beginTransaction();
+    dao.getCurrentSession();
+    dao.beginTransaction();
 
-    User user = userDao.findById(userid);
+    User user = dao.findById(User.class, userid);
     if (user == null) {
-      userDao.closeCurrentSession();
+      dao.closeCurrentSession();
       return Response.status(Response.Status.NOT_FOUND).build();
     }
-    userDao.delete(user);
+    dao.delete(user);
 
-    userDao.commit();
+    dao.commit();
     return Response.ok(user, MediaType.APPLICATION_JSON_TYPE).build();
   }
 
   @GET
   @Path("/{userId}/followers")
   public Response getFollowers(@PathParam("userId") int userid) {
-    userDao.getCurrentSession();
-    userDao.beginTransaction();
+    dao.getCurrentSession();
+    dao.beginTransaction();
 
-    User user = userDao.findById(userid);
+    User user = dao.findById(User.class, userid);
     if (user == null) {
-      userDao.closeCurrentSession();
+      dao.closeCurrentSession();
       return Response.status(Response.Status.NOT_FOUND).build();
     }
     GenericEntity<List<User>> entity =
             new GenericEntity<List<User>>(Lists.newArrayList(user.getFollowers())) {};
 
-    userDao.commit();
+    dao.commit();
     return Response.ok(entity).build();
   }
 
   @PUT
   @Path("/{userId}/followers")
   public Response updateFollowers(Target target, @PathParam("userId") int userid) {
-    userDao.getCurrentSession();
-    userDao.beginTransaction();
+    dao.getCurrentSession();
+    dao.beginTransaction();
 
-    User user = userDao.findById(userid);
-    User follower = userDao.findById(target.getTargetId());
+    User user = dao.findById(User.class, userid);
+    User follower = dao.findById(User.class, target.getTargetId());
     if (user == null || follower == null) {
-      userDao.closeCurrentSession();
+      dao.closeCurrentSession();
       return Response.status(Response.Status.NOT_FOUND).build();
     }
     user.addFollower(follower);
@@ -148,20 +145,20 @@ public class UserResource {
     GenericEntity<List<User>> entity =
             new GenericEntity<List<User>>(Lists.newArrayList(user.getFollowers())) {};
 
-    userDao.commit();
+    dao.commit();
     return Response.ok(entity).build();
   }
 
   @DELETE
   @Path("/{userId}/followers/{targetId}")
   public Response DeleteFollowers(@PathParam("userId") int userid, @PathParam("targetId") int targetId) {
-    userDao.getCurrentSession();
-    userDao.beginTransaction();
+    dao.getCurrentSession();
+    dao.beginTransaction();
 
-    User user = userDao.findById(userid);
-    User follower = userDao.findById(targetId);
+    User user = dao.findById(User.class, userid);
+    User follower = dao.findById(User.class, targetId);
     if (user == null || follower == null) {
-      userDao.closeCurrentSession();
+      dao.closeCurrentSession();
       return Response.status(Response.Status.NOT_FOUND).build();
     }
     for(Post p : user.getPosts()) {
@@ -171,38 +168,38 @@ public class UserResource {
     GenericEntity<List<User>> entity =
             new GenericEntity<List<User>>(Lists.newArrayList(user.getFollowers())) {};
 
-    userDao.commit();
+    dao.commit();
     return Response.ok(entity).build();
   }
 
   @GET
   @Path("/{userId}/followings")
   public Response GetFollowings(@PathParam("userId") int userid) {
-    userDao.getCurrentSession();
-    userDao.beginTransaction();
+    dao.getCurrentSession();
+    dao.beginTransaction();
 
-    User user = userDao.findById(userid);
+    User user = dao.findById(User.class, userid);
     if (user == null) {
-      userDao.closeCurrentSession();
+      dao.closeCurrentSession();
       return Response.status(Response.Status.NOT_FOUND).build();
     }
     GenericEntity<List<User>> entity =
             new GenericEntity<List<User>>(Lists.newArrayList(user.getFollowings())) {};
 
-    userDao.commit();
+    dao.commit();
     return Response.ok(entity).build();
   }
 
   @PUT
   @Path("/{userId}/followings")
   public Response updateFollowings(Target target, @PathParam("userId") int userid) {
-    userDao.getCurrentSession();
-    userDao.beginTransaction();
+    dao.getCurrentSession();
+    dao.beginTransaction();
 
-    User user = userDao.findById(userid);
-    User following = userDao.findById(target.getTargetId());
+    User user = dao.findById(User.class, userid);
+    User following = dao.findById(User.class, target.getTargetId());
     if (user == null || following == null) {
-      userDao.closeCurrentSession();
+      dao.closeCurrentSession();
       return Response.status(Response.Status.NOT_FOUND).build();
     }
     user.addFollowing(following);
@@ -212,20 +209,20 @@ public class UserResource {
     GenericEntity<List<User>> entity =
             new GenericEntity<List<User>>(Lists.newArrayList(user.getFollowings())) {};
 
-    userDao.commit();
+    dao.commit();
     return Response.ok(entity).build();
   }
 
   @DELETE
   @Path("/{userId}/followings/{targetId}")
   public Response DeleteFollowings(@PathParam("userId") int userid, @PathParam("targetId") int targetId) {
-    userDao.getCurrentSession();
-    userDao.beginTransaction();
+    dao.getCurrentSession();
+    dao.beginTransaction();
 
-    User user = userDao.findById(userid);
-    User following = userDao.findById(targetId);
+    User user = dao.findById(User.class, userid);
+    User following = dao.findById(User.class, targetId);
     if (user == null || following == null) {
-      userDao.closeCurrentSession();
+      dao.closeCurrentSession();
       return Response.status(Response.Status.NOT_FOUND).build();
     }
     for(Post p : following.getPosts()) {
@@ -235,7 +232,7 @@ public class UserResource {
     GenericEntity<List<User>> entity =
             new GenericEntity<List<User>>(Lists.newArrayList(user.getFollowings())) {};
 
-    userDao.commit();
+    dao.commit();
     return Response.ok(entity).build();
   }
 
@@ -244,15 +241,15 @@ public class UserResource {
   @TimeLineView
   @Produces(MediaType.APPLICATION_JSON)
   public List<Post> getTimeLine(@PathParam("userId") int userid) {
-    userDao.getCurrentSession();
-    userDao.beginTransaction();
+    dao.getCurrentSession();
+    dao.beginTransaction();
 
-    List<Post> posts = (List<Post>) userDao.findById(userid).getFollowingPosts();
+    List<Post> posts = (List<Post>) dao.findById(User.class, userid).getFollowingPosts();
     for(Post p : posts) {
       p.getCreatedBy().getUserId();
     }
 
-    userDao.commit();
+    dao.commit();
     return posts;
   }
 
@@ -261,24 +258,24 @@ public class UserResource {
   @TimeLineView
   @Consumes(MediaType.APPLICATION_JSON)
   public Response createUsersPost(Post post, @PathParam("userId") int userid, @Context UriInfo uriInfo) {
-    userDao.getCurrentSession();
-    userDao.beginTransaction();
+    dao.getCurrentSession();
+    dao.beginTransaction();
 
-    User user = userDao.findById(userid);
+    User user = dao.findById(User.class, userid);
     if (user == null) {
-      userDao.closeCurrentSession();
+      dao.closeCurrentSession();
       return Response.status(Response.Status.NOT_FOUND).build();
     }
 
     Post newPost = new Post(user, new Date(), post.getContent());
-    newPost.setPostId(postDao.persist(newPost));
+    newPost.setPostId(dao.persist(newPost));
 
     for(User follower : user.getFollowers()) {
       follower.addFollowingPost(newPost);
     }
     user.addFollowingPost(newPost);
 
-    userDao.commit();
+    dao.commit();
     UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder().path(Integer.toString(newPost.getPostId()));
     return Response.created(uriBuilder.build()).entity(
             new GenericEntity<Post>(newPost, newPost.getClass())).build();
@@ -288,19 +285,19 @@ public class UserResource {
   @Path("/{userId}/posts/")
   @UserDetailView
   public Response getUsersPosts(@PathParam("userId") int userid) {
-    userDao.getCurrentSession();
-    userDao.beginTransaction();
+    dao.getCurrentSession();
+    dao.beginTransaction();
 
-    User user = userDao.findById(userid);
+    User user = dao.findById(User.class, userid);
     if (user == null) {
-      userDao.closeCurrentSession();
+      dao.closeCurrentSession();
       return Response.status(Response.Status.NOT_FOUND).build();
     }
 
     GenericEntity<List<Post>> entity =
             new GenericEntity<List<Post>>(Lists.newArrayList(user.getPosts())) {};
 
-    userDao.commit();
+    dao.commit();
     return Response.ok(entity).build();
   }
 }

@@ -1,7 +1,7 @@
 package com.aiceru.lezhinapply.resource;
 
 import com.aiceru.lezhinapply.dao.Dao;
-import com.aiceru.lezhinapply.dao.HibernatePostDao;
+import com.aiceru.lezhinapply.dao.HibernateDao;
 import com.aiceru.lezhinapply.model.Post;
 import com.aiceru.lezhinapply.util.filter.TimeLineView;
 import com.aiceru.lezhinapply.util.jpa.HibernateUtil;
@@ -18,39 +18,39 @@ import java.util.List;
  */
 @Path("/posts")
 public class PostResource {
-  private Dao<Post, Integer> postDao;
+  private Dao dao;
 
   public PostResource() {
-    this.postDao = new HibernatePostDao(HibernateUtil.getSessionFactory());
+    this.dao = new HibernateDao(HibernateUtil.getSessionFactory());
   }
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<Post> getPosts() {
-    postDao.getCurrentSession();
-    postDao.beginTransaction();
+    dao.getCurrentSession();
+    dao.beginTransaction();
 
-    List<Post> posts = postDao.findAll();
+    List<Post> posts = dao.findAll(Post.class);
 
-    postDao.commit();
+    dao.commit();
     return posts;
   }
 
   @GET
   @Path("/{postId}")
   public Response getPost(@PathParam("postId") int postid) {
-    postDao.getCurrentSession();
-    postDao.beginTransaction();
+    dao.getCurrentSession();
+    dao.beginTransaction();
 
     Response response;
-    Post post = postDao.findById(postid);
+    Post post = dao.findById(Post.class, postid);
     if (post == null) {
       response = Response.status(Response.Status.NOT_FOUND).build();
     } else {
       response = Response.ok(post, MediaType.APPLICATION_JSON_TYPE).build();
     }
 
-    postDao.commit();
+    dao.commit();
     return response;
   }
 
@@ -59,17 +59,17 @@ public class PostResource {
   @TimeLineView
   @Consumes(MediaType.APPLICATION_JSON)
   public Response updatePost(Post updatepost, @PathParam("postId") int postid, @Context UriInfo uriInfo) {
-    postDao.getCurrentSession();
-    postDao.beginTransaction();
+    dao.getCurrentSession();
+    dao.beginTransaction();
 
-    Post post = postDao.findById(postid);
+    Post post = dao.findById(Post.class, postid);
     if (post == null) {
-      postDao.closeCurrentSession();
+      dao.closeCurrentSession();
       return Response.status(Response.Status.NOT_FOUND).build();
     }
     post.setContent(updatepost.getContent());
 
-    postDao.commit();
+    dao.commit();
     return Response.ok(post, MediaType.APPLICATION_JSON_TYPE).build();
   }
 
@@ -77,18 +77,18 @@ public class PostResource {
   @Path("/{postId}")
   @TimeLineView
   public Response deletePost(@PathParam("postId") int postid) {
-    postDao.getCurrentSession();
-    postDao.beginTransaction();
+    dao.getCurrentSession();
+    dao.beginTransaction();
 
-    Post post = postDao.findById(postid);
+    Post post = dao.findById(Post.class, postid);
     if (post == null) {
-      postDao.closeCurrentSession();
+      dao.closeCurrentSession();
       return Response.status(Response.Status.NOT_FOUND).build();
     }
     post.getCreatedBy().removePost(post);
-    postDao.delete(post);
+    dao.delete(post);
 
-    postDao.commit();
+    dao.commit();
     return Response.ok(post, MediaType.APPLICATION_JSON_TYPE).build();
   }
 }
