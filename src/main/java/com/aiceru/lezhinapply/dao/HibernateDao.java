@@ -94,7 +94,7 @@ public class HibernateDao implements Dao {
       String value = queryString.split("=")[1];
       if (value != null && property != null) {   // name criteria only used with User.class
         assert type.equals(User.class);
-        cq.where(cb.like(rootEntry.get(property), value));
+        cq.where(cb.equal(rootEntry.get(property), value));
       }
     }
     if (orderProperty != null) {

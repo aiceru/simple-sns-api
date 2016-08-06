@@ -365,7 +365,7 @@ public class UserResource {
   @GET
   @Path("/{userId}/posts/")
   @UserDetailView
-  public Response getUsersPosts(@PathParam("userId") int userid,
+  public Response getUsersPosts(@PathParam("userId") final int userid,
                                 @DefaultValue("0") @QueryParam("offset") final int offset,
                                 @DefaultValue("-1") @QueryParam("limit") final int limit) {
     List<Post> result = TransactionManager.doInTransaction(new TransactionCallable<List<Post>>() {
