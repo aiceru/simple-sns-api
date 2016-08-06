@@ -1,14 +1,12 @@
 package com.aiceru.lezhinapply.dao;
 
+import com.aiceru.lezhinapply.model.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.io.Serializable;
 import java.util.List;
 
@@ -78,12 +76,34 @@ public class HibernateDao implements Dao {
 
   @Override
   public <T> List<T> findAll(final Class<T> type) {
+    return findAll(type, null, null, true, 0, -1);
+  }
+
+  @Override
+  public <T> List<T> findAll(final Class<T> type, final String queryString,
+                             final String orderProperty, final boolean orderAsc,
+                             final int offset, final int limit) {
     assert tx.isActive();
+
     CriteriaBuilder cb = session.getCriteriaBuilder();
     CriteriaQuery<T> cq = cb.createQuery(type);
     Root<T> rootEntry = cq.from(type);
     CriteriaQuery<T> all = cq.select(rootEntry);
+    if (queryString != null) {
+      String property = queryString.split("=")[0];
+      String value = queryString.split("=")[1];
+      if (value != null && property != null) {   // name criteria only used with User.class
+        assert type.equals(User.class);
+        cq.where(cb.like(rootEntry.get(property), value));
+      }
+    }
+    if (orderProperty != null) {
+      if (orderAsc) cq.orderBy(cb.asc(rootEntry.get(orderProperty)));
+      else cq.orderBy(cb.desc(rootEntry.get(orderProperty)));
+    }
     TypedQuery<T> allQuery = session.createQuery(all);
+    if (offset >= 0) allQuery = allQuery.setFirstResult(offset);
+    if (limit >= 0) allQuery = allQuery.setMaxResults(limit);
     return allQuery.getResultList();
   }
 

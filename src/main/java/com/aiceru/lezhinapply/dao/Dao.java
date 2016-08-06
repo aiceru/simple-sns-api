@@ -20,5 +20,8 @@ public interface Dao {
   public <T> T findById(final Class<T> type, int id);
   public <T> void delete(T entity);
   public <T> List<T> findAll(final Class<T> type);
+  public <T> List<T> findAll(final Class<T> type, final String queryString,
+                             final String orderProperty, final boolean orderAsc,
+                             final int offset, final int limit);
   public <T> void deleteAll(final Class<T> type);
 }

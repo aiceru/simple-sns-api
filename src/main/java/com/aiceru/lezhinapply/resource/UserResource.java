@@ -54,11 +54,14 @@ public class UserResource {
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public List<User> getUsers() {
+  public List<User> getUsers(@QueryParam("q") final String searchQuery,
+                             @DefaultValue("0") @QueryParam("offset") final int offset,
+                             @DefaultValue("-1") @QueryParam("limit") final int limit) {
     List<User> result = TransactionManager.doInTransaction(new TransactionCallable<List<User>>() {
       @Override
       public List<User> execute() {
-        return dao.findAll(User.class);
+        String name = null;
+        return dao.findAll(User.class, searchQuery, null, true, offset, limit);
       }
     }, dao);
     return result;
@@ -132,15 +135,25 @@ public class UserResource {
 
   @GET
   @Path("/{userId}/followers")
-  public Response getFollowers(@PathParam("userId") final int userid) {
+  public Response getFollowers(@PathParam("userId") final int userid,
+                               @DefaultValue("0") @QueryParam("offset") final int offset,
+                               @DefaultValue("-1") @QueryParam("limit") final int limit) {
     List<User> result = TransactionManager.doInTransaction(new TransactionCallable<List<User>>() {
       @Override
       public List<User> execute() {
+        int from = offset, to = offset + limit;
         User user = dao.findById(User.class, userid);
         if (user == null) {
           return null;
         }
-        return user.getFollowers();
+        List<User> followers = user.getFollowers();
+        if (to > followers.size() || limit <= 0) {
+          to = followers.size();
+        }
+        if (from > followers.size()) {
+          from = followers.size();
+        }
+        return followers.subList(from, to);
       }
     }, dao);
 
@@ -208,15 +221,25 @@ public class UserResource {
 
   @GET
   @Path("/{userId}/followings")
-  public Response GetFollowings(@PathParam("userId") final int userid) {
+  public Response GetFollowings(@PathParam("userId") final int userid,
+                                @DefaultValue("0") @QueryParam("offset") final int offset,
+                                @DefaultValue("-1") @QueryParam("limit") final int limit) {
     List<User> result = TransactionManager.doInTransaction(new TransactionCallable<List<User>>() {
       @Override
       public List<User> execute() {
+        int from = offset, to = offset + limit;
         User user = dao.findById(User.class, userid);
         if (user == null) {
           return null;
         }
-        return user.getFollowings();
+        List<User> followings = user.getFollowings();
+        if (to > followings.size() || limit <= 0) {
+          to = followings.size();
+        }
+        if (from > followings.size()) {
+          from = followings.size();
+        }
+        return followings.subList(from, to);
       }
     }, dao);
 
@@ -284,11 +307,25 @@ public class UserResource {
   @Path("/{userId}/timeline")
   @TimeLineView
   @Produces(MediaType.APPLICATION_JSON)
-  public List<Post> getTimeLine(@PathParam("userId") final int userid) {
+  public List<Post> getTimeLine(@PathParam("userId") final int userid,
+                                @DefaultValue("0") @QueryParam("offset") final int offset,
+                                @DefaultValue("-1") @QueryParam("limit") final int limit) {
     List<Post> result = TransactionManager.doInTransaction(new TransactionCallable<List<Post>>() {
       @Override
       public List<Post> execute() {
-        return dao.findById(User.class, userid).getFollowingPosts();
+        int from = offset, to = offset + limit;
+        User user = dao.findById(User.class, userid);
+        if (user == null) {
+          return null;
+        }
+        List<Post> timeline = user.getFollowingPosts();
+        if (to > timeline.size() || limit <= 0) {
+          to = timeline.size();
+        }
+        if (from > timeline.size()) {
+          from = timeline.size();
+        }
+        return timeline.subList(from, to);
       }
     }, dao);
     return result;
@@ -328,15 +365,25 @@ public class UserResource {
   @GET
   @Path("/{userId}/posts/")
   @UserDetailView
-  public Response getUsersPosts(@PathParam("userId") int userid) {
+  public Response getUsersPosts(@PathParam("userId") int userid,
+                                @DefaultValue("0") @QueryParam("offset") final int offset,
+                                @DefaultValue("-1") @QueryParam("limit") final int limit) {
     List<Post> result = TransactionManager.doInTransaction(new TransactionCallable<List<Post>>() {
       @Override
       public List<Post> execute() {
+        int from = offset, to = offset + limit;
         User user = dao.findById(User.class, userid);
         if (user == null) {
           return null;
         }
-        return user.getPosts();
+        List<Post> posts = user.getPosts();
+        if (to > posts.size() || limit <= 0) {
+          to = posts.size();
+        }
+        if (from > posts.size()) {
+          from = posts.size();
+        }
+        return posts.subList(from, to);
       }
     }, dao);
     if (result == null) {

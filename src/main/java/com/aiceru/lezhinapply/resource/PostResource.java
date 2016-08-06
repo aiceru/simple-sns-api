@@ -28,11 +28,12 @@ public class PostResource {
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public List<Post> getPosts() {
+  public List<Post> getPosts(@DefaultValue("0") @QueryParam("offset") final int offset,
+                             @DefaultValue("-1") @QueryParam("limit") final int limit) {
     List<Post> result = TransactionManager.doInTransaction(new TransactionCallable<List<Post>>() {
       @Override
       public List<Post> execute() {
-        return dao.findAll(Post.class);
+        return dao.findAll(Post.class, null, "timeStamp", false, offset, limit);
       }
     }, dao);
     return result;
@@ -40,6 +41,7 @@ public class PostResource {
 
   @GET
   @Path("/{postId}")
+  @TimeLineView
   public Response getPost(@PathParam("postId") final int postid) {
     Post result = TransactionManager.doInTransaction(new TransactionCallable<Post>() {
       @Override
